@@ -4,12 +4,9 @@ name: Build Image
 on:
   push:
     branches:
-      - 'releases/**'
+      - 'main'
     tags:
       - 'v*.*.*'
-  pull_request:
-    branches:
-      - 'main'
 
 jobs:
   build:
