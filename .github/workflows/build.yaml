@@ -1,0 +1,51 @@
+name: Build Image
+
+# Controls when the workflow will run
+on:
+  push:
+    branches:
+      - 'releases/**'
+    tags:
+      - 'v*.*.*'
+  pull_request:
+    branches:
+      - 'main'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Install Dependencies
+      run: |
+        sudo apt update
+        sudo apt install coreutils p7zip-full qemu-user-static
+
+    - name: Checkout Project Repository
+      uses: actions/checkout@v2
+      with:
+        path: repository
+        submodules: true
+
+    - name: Build Image
+      run: |
+        sudo modprobe loop
+        cd repository
+        sudo bash -x ./build_image.sh
+
+    - name: Copy output
+      id: copy
+      run: |
+        source repository/OpenMowerOS/src/config
+        NOW=$(date +"%Y-%m-%d-%H%M")
+        IMAGE=$NOW-open-mower-os-$DIST_VERSION
+
+        cp repository/OpenMowerOS/src/workspace/*.img $IMAGE.img
+
+        echo "::set-output name=image::$IMAGE"
+
+    # artifact upload will take care of zipping for us
+    - uses: actions/upload-artifact@v1
+      if: github.event_name == 'push'
+      with:
+        name: ${{ steps.copy.outputs.image }}
+        path: ${{ steps.copy.outputs.image }}.img
