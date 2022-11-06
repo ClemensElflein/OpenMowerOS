@@ -16,8 +16,6 @@ install_cleanup_trap
 echo "Get socat for GPS redirection (debug port)"
 apt install socat
 
-
-#unpack /filesystem/home/pi /home/"${BASE_USER}" "${BASE_USER}"
 unpack /filesystem/home/root /root root
 unpack /filesystem/boot /boot
 
@@ -30,11 +28,16 @@ unpack /filesystem/root /
 
 
 # Enable the UARTs for OpenMower
-echo "dtoverlay=disable-bt\
-dtoverlay=uart2\
-dtoverlay=uart3\
-dtoverlay=uart4\
+echo "dtoverlay=disable-bt
+dtoverlay=uart2
+dtoverlay=uart3
+dtoverlay=uart4
 dtoverlay=uart5" >> /boot/config.txt
 
 # Remove the serial console from cmdline.txt.
-sed -i 's/console=serial0,115200 //g' cmdline.txt
+sed -i 's/console=serial0,115200 //g' /boot/cmdline.txt
+
+wget -O /boot/mower_config.sh https://raw.githubusercontent.com/ClemensElflein/open_mower_ros/main/src/open_mower/config/mower_config.sh.example
+
+# enable the open-mower service
+systemctl enable open-mower

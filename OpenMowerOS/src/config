@@ -1,7 +1,6 @@
 export DIST_NAME=OpenMowerOS
 export DIST_VERSION=0.1.0
 
-export BASE_USER="openmower"
 export BASE_USER_PASSWORD="openmower"
 export BASE_ENABLE_UART=no
 export BASE_ARCH="aarch64"
@@ -9,6 +8,9 @@ export BASE_OVERRIDE_HOSTNAME="openmower"
 export BASE_DISTRO="raspios64"
 export BASE_IMAGE_ENLARGEROOT=1000
 
+export DOCKER_ADD_USER_TO_GROUP="yes"
+# we don't want docker compose in boot directory, since we don't want the user to mess around with the config anyways
+export DOCKER_COMPOSE_BOOT="no"
 
 # rpi-imager json generator settings
 export RPI_IMAGER_NAME="${DIST_NAME}"
@@ -16,5 +18,5 @@ export RPI_IMAGER_DESCRIPTION="The default image to use with the OpenMower softw
 export RPI_IMAGER_WEBSITE="https://github.com/ClemensElflein/OpenMower"
 export RPI_IMAGER_ICON="https://raw.githubusercontent.com/guysoft/CustomPiOS/devel/media/rpi-imager-CustomPiOS.png"
 
-export MODULES="base(network,docker,comitup,openmoweros)"
+export MODULES="base(network,docker,comitup,openocd,openmoweros)"
 

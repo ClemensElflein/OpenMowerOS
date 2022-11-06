@@ -1,0 +1,12 @@
+[Unit]
+Description=OpenMower service
+After=docker.service
+Requires=docker.service
+
+[Service]
+TimeoutStartSec=30
+Restart=always
+ExecStart=/bin/bash -c "/root/start_open_mower.sh"
+
+[Install]
+WantedBy=default.target
