@@ -1,0 +1,2 @@
+[ -n "$COMITUP_NAME" ] || COMITUP_NAME="open-mower-<nnn>"
+[ -n "$COMITUP_PASSWORD" ] || COMITUP_PASSWORD="open-mower"

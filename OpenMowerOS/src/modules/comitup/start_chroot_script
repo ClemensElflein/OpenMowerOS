@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# Comitup
+# This installs comitup into the CustomPiOS
+# Written by Clemens Elflein
+# GPL V3
+########
+
+
+# Source error handling, leave this in place
+set -x
+set -e
+
+source /common.sh
+install_cleanup_trap
+
+
+# Install comitup copy pasted from tutorial
+# https://github.com/davesteele/comitup/wiki/Installing-Comitup
+wget https://davesteele.github.io/comitup/latest/davesteele-comitup-apt-source_latest.deb
+dpkg -i --force-all davesteele-comitup-apt-source_latest.deb
+rm davesteele-comitup-apt-source_latest.deb
+apt-get update
+apt-get install -y --no-install-recommends comitup comitup-watch
+rm /etc/network/interfaces
+systemctl mask dnsmasq.service
+systemctl mask systemd-resolved.service
+systemctl mask dhcpd.service
+systemctl mask dhcpcd.service
+systemctl mask wpa-supplicant.service
+systemctl enable NetworkManager.service
+
+# Echo the defaults into the comitup config file
+echo "ap_name: $COMITUP_NAME" >> /etc/comitup.conf
+echo "ap_password: $COMITUP_PASSWORD" >> /etc/comitup.conf

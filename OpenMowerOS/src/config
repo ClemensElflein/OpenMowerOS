@@ -1,11 +1,20 @@
 export DIST_NAME=OpenMowerOS
 export DIST_VERSION=0.1.0
 
+#export BASE_ADD_USER="yes"
+#export BASE_USER="openmower"
+export BASE_USER_PASSWORD="open-mower"
+export BASE_ENABLE_UART=no
+export BASE_ARCH="aarch64"
+export BASE_OVERRIDE_HOSTNAME="open-mower"
+export BASE_DISTRO="raspios64"
+
+
 # rpi-imager json generator settings
 export RPI_IMAGER_NAME="${DIST_NAME}"
-export RPI_IMAGER_DESCRIPTION="A raspberrypi distro built with CustomPiOS"
-export RPI_IMAGER_WEBSITE="https://github.com/guysoft/CustomPiOS"
+export RPI_IMAGER_DESCRIPTION="The default image to use with the OpenMower software"
+export RPI_IMAGER_WEBSITE="https://github.com/ClemensElflein/OpenMower"
 export RPI_IMAGER_ICON="https://raw.githubusercontent.com/guysoft/CustomPiOS/devel/media/rpi-imager-CustomPiOS.png"
 
-export MODULES="base(network,openmoweros)"
+export MODULES="base(network,docker,comitup,openmoweros)"
 
