@@ -1,0 +1,3 @@
+[submodule "CustomPiOS"]
+	path = CustomPiOS
+	url = https://github.com/ClemensElflein/CustomPiOS.git
