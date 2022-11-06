@@ -13,7 +13,11 @@ set -e
 source /common.sh
 install_cleanup_trap
 
-unpack /filesystem/home/pi /home/"${BASE_USER}" "${BASE_USER}"
+echo "Get socat for GPS redirection (debug port)"
+apt install socat
+
+
+#unpack /filesystem/home/pi /home/"${BASE_USER}" "${BASE_USER}"
 unpack /filesystem/home/root /root root
 unpack /filesystem/boot /boot
 
@@ -22,3 +26,15 @@ echo "$OPENMOWEROS_VAR"
 
 # Unpack root at the end, so files are modified before
 unpack /filesystem/root /
+
+
+
+# Enable the UARTs for OpenMower
+echo "dtoverlay=disable-bt\
+dtoverlay=uart2\
+dtoverlay=uart3\
+dtoverlay=uart4\
+dtoverlay=uart5" >> /boot/config.txt
+
+# Remove the serial console from cmdline.txt.
+sed -i 's/console=serial0,115200 //g' cmdline.txt

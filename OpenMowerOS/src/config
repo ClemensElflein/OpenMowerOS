@@ -1,13 +1,13 @@
 export DIST_NAME=OpenMowerOS
 export DIST_VERSION=0.1.0
 
-#export BASE_ADD_USER="yes"
-#export BASE_USER="openmower"
-export BASE_USER_PASSWORD="open-mower"
+export BASE_USER="openmower"
+export BASE_USER_PASSWORD="openmower"
 export BASE_ENABLE_UART=no
 export BASE_ARCH="aarch64"
-export BASE_OVERRIDE_HOSTNAME="open-mower"
+export BASE_OVERRIDE_HOSTNAME="openmower"
 export BASE_DISTRO="raspios64"
+export BASE_IMAGE_ENLARGEROOT=1000
 
 
 # rpi-imager json generator settings
