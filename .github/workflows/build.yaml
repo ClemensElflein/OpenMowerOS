@@ -40,7 +40,7 @@ jobs:
 
         echo "::set-output name=image::$IMAGE"
     - name: Create image zip
-        run: zip ${{ steps.copy.outputs.image }}.zip ${{ steps.copy.outputs.image }}.img
+      run: zip ${{ steps.copy.outputs.image }}.zip ${{ steps.copy.outputs.image }}.img
     - uses: "marvinpinto/action-automatic-releases@latest"
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
