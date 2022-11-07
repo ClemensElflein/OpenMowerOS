@@ -39,10 +39,17 @@ jobs:
         cp repository/OpenMowerOS/src/workspace/*.img $IMAGE.img
 
         echo "::set-output name=image::$IMAGE"
-
-    # artifact upload will take care of zipping for us
-    - uses: actions/upload-artifact@v1
-      if: github.event_name == 'push'
+    - uses: "marvinpinto/action-automatic-releases@latest"
       with:
-        name: ${{ steps.copy.outputs.image }}
-        path: ${{ steps.copy.outputs.image }}.img
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        automatic_release_tag: "latest"
+        prerelease: true
+        title: "Latest Image"
+        files: |
+          ${{ steps.copy.outputs.image }}.img
+    # artifact upload will take care of zipping for us
+    #- uses: actions/upload-artifact@v1
+    #  if: github.event_name == 'push'
+    #  with:
+    #    name: ${{ steps.copy.outputs.image }}
+    #    path: ${{ steps.copy.outputs.image }}.img
