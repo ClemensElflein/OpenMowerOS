@@ -4,6 +4,7 @@ After=docker.service
 Requires=docker.service
 
 [Service]
+RestartSec=10
 TimeoutStartSec=30
 Restart=always
 ExecStart=/bin/bash -c "/root/start_open_mower.sh"
