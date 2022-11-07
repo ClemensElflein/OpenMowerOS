@@ -38,7 +38,7 @@ jobs:
 
         cp repository/OpenMowerOS/src/workspace/*.img $IMAGE.img
 
-	echo "image=$IMAGE" >> $GITHUB_OUTPUT
+        echo "image=$IMAGE" >> $GITHUB_OUTPUT
     - name: Create image zip
       run: zip ${{ steps.copy.outputs.image }}.zip ${{ steps.copy.outputs.image }}.img
     - uses: "marvinpinto/action-automatic-releases@latest"
