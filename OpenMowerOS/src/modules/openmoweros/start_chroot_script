@@ -16,6 +16,7 @@ install_cleanup_trap
 echo "Get socat for GPS redirection (debug port)"
 apt install socat
 
+unpack /filesystem/home/pi /home/pi pi
 unpack /filesystem/home/root /root root
 unpack /filesystem/boot /boot
 

@@ -13,5 +13,7 @@ docker run \
 	-e ROSOUT_DISABLE_FILE_LOGGING=True\
 	--network="host"\
         --privileged\
+	--name open-mower\
+	--rm\
 	-t\
 	ghcr.io/clemenselflein/open_mower_ros:releases-${OM_VERSION}
