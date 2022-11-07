@@ -18,5 +18,5 @@ export RPI_IMAGER_DESCRIPTION="The default image to use with the OpenMower softw
 export RPI_IMAGER_WEBSITE="https://github.com/ClemensElflein/OpenMower"
 export RPI_IMAGER_ICON="https://raw.githubusercontent.com/guysoft/CustomPiOS/devel/media/rpi-imager-CustomPiOS.png"
 
-export MODULES="base(network,docker,comitup,openocd,openmoweros)"
+export MODULES="base(network,openmoweros)"
 
