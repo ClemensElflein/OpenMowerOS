@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# CustomPiOS module : openmower
+# <Description what this module does>
+# Written by DocGalaxyBlock (https://github.com/docgalaxyblock/)
+# GPL V3
+########
+
+# Source error handling, leave this in place
+set -ex
+
+# Source CustomPIOS common.sh
+source /common.sh
+install_cleanup_trap
+
+
+echo_green "Copying files to root filesystem and applying permissions..."
+unpack /filesystem/root /
+chown -R pi:pi /home/pi
+chmod +x /home/pi/*.sh
+
+cp /etc/comitup.conf.example /boot/openmower/hotspot-example
+
+echo_green "Get the latest mower_config.sh example..."
+wget -O /boot/openmower/mower_config https://raw.githubusercontent.com/ClemensElflein/open_mower_ros/main/src/open_mower/config/mower_config.sh.example
+
+# replace default comitup modules configs and paths
+echo_green "Replace comitup path and config..."
+sed -i 's|/boot/comitup.conf|/boot/openmower/hotspot|g ; s|/boot/comitup.conf.settings-applied|/boot/openmower/hotspot.settings-applied|' /etc/systemd/system/comitup_config_copy.service
+
+# ensure conflicting services are masked
+echo_green "ensure comitup/NetworkManager conflicting servies are masked..."
+systemctl_if_exists mask dhcpd.service
+systemctl_if_exists mask dhcpcd.service
+systemctl_if_exists mask wpa-supplicant.service
+systemctl_if_exists mask raspberrypi-net-mods.service
+
+echo_green "Get socat for GPS redirection (debug port)..."
+apt-get update --allow-releaseinfo-change
+apt-get install --yes socat
+
+echo_green "Disabling podman auto update..."
+systemctl disable podman-auto-update.timer 
+
+
+
+#cleanup
+apt-get clean
+apt-get autoremove --yes

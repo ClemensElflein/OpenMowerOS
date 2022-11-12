@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+# CustomPiOS module : podman
+# <Description what this module does>
+# Written by DocGalaxyBlock (https://github.com/docgalaxyblock/)
+# GPL V3
+########
+
+# Source error handling, leave this in place
+set -ex
+
+# Source CustomPIOS common.sh
+source /common.sh
+install_cleanup_trap
+
+# ToDo Ubuntu check
+# needs a case statement rework
+if [ "${BASE_DISTRO}" == "ubuntu" ] && [ "$(echo "$(grep VERSION_ID /etc/os-release |  -e 's/VERSION_ID="// ; s/"//') < 20.10" | bc)" ]; then
+    echo 'Error, podman requires at least Ubuntu 20.10 (https://podman.io/getting-started/installation.html#linux-distributions)'
+    exit 1
+fi
+
+echo_green "Installing podman..."
+apt-get update --allow-releaseinfo-change
+apt-get install --yes podman
+
+### ToDo - only available at debian sid -> next major raspian release / ubuntu jammy
+#
+# emulate docker cli using podman
+#if [ "${PODMAN_DOCKER}" == "yes" ]; then
+#    to achive: if [ { (distr = (raspbian || raspios || raspios64)) && release >= 12 } || (distr = ubuntu && release >= 22.04 ) ]
+#    if { [ "${BASE_DISTRO}" == "raspbian" ] && [ $(( $(grep VERSION_ID /etc/os-release |  -e 's/VERSION_ID="// ; s/"//') )) -gt 12 ] } || { [ "${BASE_DISTRO}" == "ubuntu" ] && [ "$(echo "$(grep VERSION_ID /etc/os-release |  -e 's/VERSION_ID="// ; s/"//') >= 20.04" | bc)" ] }; then
+#        echo_green "Installing podman-docker..."
+#        apt-get install --yes podman-docker
+#    fi
+#fi
+
+# podman-compose
+#
+# things to add
+# - installation as user
+#
+if [ "${PODMAN_COMPOSE}" == "stable" ] || [ "${PODMAN_COMPOSE}" == "devel" ]; then
+    echo_green "Installing podman-compose"
+    apt-get install --yes python3-pip
+    pip3 install --upgrade pip
+    if [ "${PODMAN_COMPOSE}" == "stable" ]; then
+        pip3 install podman-compose
+    elif [ "${PODMAN_COMPOSE}" == "devel" ]; then
+        pip3 install https://github.com/containers/podman-compose/archive/devel.tar.gz
+    fi
+fi
+
+
+
+#cleanup
+apt-get clean
+apt-get autoremove --yes
