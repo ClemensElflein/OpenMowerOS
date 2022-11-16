@@ -1,5 +1,9 @@
 # OpenMowerOS
 
+![build badge](https://github.com/docgalaxyblock/OpenMowerOS-Testing/actions/workflows/BuildOS.yml/badge.svg?branch=testing)
+![build](https://img.shields.io/github/workflow/status/docgalaxyblock/OpenMowerOS-Testing/BuildOS.yml/testing)
+![downloads](https://img.shields.io/github/downloads/docgalaxyblock/OpenMowerOS-Testing/total)
+
 *Based on [CustomPiOS](https://github.com/guysoft/CustomPiOS)*
 
 This repository contains the official OpenMowerOS image for running the [OpenMower](https://github.com/ClemensElflein/OpenMower) project.
