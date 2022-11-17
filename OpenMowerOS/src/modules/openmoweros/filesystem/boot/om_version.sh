@@ -1,9 +1,6 @@
 # select which version of the OpenMower software to run.
-# stable: The most stable release, run if you want it to just work
-# beta: If you are a little more brave and want to test new features select the beta version
-# testing: If you want to be among the first to test new features, use testing. Expect things to break!
+# testing: This one changes very often. Only use it if you want to take part in the development or are asked to use it by a developer.
+# alpha: For people who like to test stuff. This one will be updated fairly often as well and without notice. Only use it, if you want to be among the first people to get new features, but prepare to have issues.
+# beta: This one is the _most stable_ one of the three. I try to keep this as stable as possible.
 
-# At the time of writing, the only available option is "testing", since there is not stable version yet.
-# Check the https://github.com/ClemensElflein/open_mower_ros repo for the current state.
-
-export OM_VERSION="testing"
+export OM_VERSION="beta"
