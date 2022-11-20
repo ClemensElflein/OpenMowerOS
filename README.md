@@ -1,9 +1,5 @@
 # OpenMowerOS
 
-![build badge](https://github.com/docgalaxyblock/OpenMowerOS-Testing/actions/workflows/BuildOS.yml/badge.svg?branch=testing)
-![build](https://img.shields.io/github/workflow/status/docgalaxyblock/OpenMowerOS-Testing/BuildOS.yml/testing)
-![downloads](https://img.shields.io/github/downloads/docgalaxyblock/OpenMowerOS-Testing/total)
-
 *Based on [CustomPiOS](https://github.com/guysoft/CustomPiOS)*
 
 This repository contains the official OpenMowerOS image for running the [OpenMower](https://github.com/ClemensElflein/OpenMower) project.
@@ -22,7 +18,7 @@ Currently this is based on the latest RaspberryPi OS with the following changes:
 
 ## Important Information
 
-- **hostname**: OpenMower
+- **hostname**: openmower
 
 - **username**: openmower
 
@@ -30,14 +26,14 @@ Currently this is based on the latest RaspberryPi OS with the following changes:
 
 - **ssh**: enabled on port 22
 
-- **hotspot SSID**: OpenMower-\<somenumber\>
+- **hotspot SSID**: openmower-\<somenumber\>
 
-- **default hotspot password**: OpenMower
+- **default hotspot password**: openmower
 
 
-- **mower_config.sh**: Is in the /boot directory and can be edited with any PC after flashing the SD card
+- **mower_config.txt**: Is in the /boot/openmower directory and can be edited with any PC after flashing the SD card
 
-- **mower_version.sh**: Is in the /boot directory and can be used to select the version to run.
+- **mower_version.txt**: Is in the /boot/openmower directory and can be used to select the version to run.
 
 ***
 
@@ -49,21 +45,21 @@ Currently this is based on the latest RaspberryPi OS with the following changes:
 
  2. Open the SD cards `boot` partition and there the `openmower` folder.
 
- 3. Edit the `hotspot` file to configure the fallback hotspot. **Change the pw and remember it!**
+ 3. Edit the `hotspot.txt` file to configure the fallback hotspot. **Change the password and remember it!**
 
     You find a `hotspot.example` in there too.
 
-    On boot the system will apply the settings and rename the `hotspot` to `hotspot.settings-applied`.
+    On boot the system will apply the settings and rename the `hotspot.txt` to `hotspot.settings-applied`.
 
- 4. *(Open the `openmower_version` and read its explanation.)*
+ 4. *(Open the `openmower_version.txt` and read its explanation. Optionally select a different version.)*
 
- 5. Edit the `mower_config` file:
+ 5. Edit the `mower_config.txt` file:
 
     - check for the latest revision of that file [here](https://github.com/ClemensElflein/open_mower_ros/blob/main/src/open_mower/config/mower_config.sh.example).
 
     - if the files differ apply the newest changes.
 
-    - add you changes to that file.
+    - add your changes to that file.
 
  6. Eject the card, put it in the mower (do not close the mower yet) and turn it on.
 
@@ -77,24 +73,20 @@ Currently this is based on the latest RaspberryPi OS with the following changes:
 
     - The hotspot will disappear and the mower should connect to your wifi
 
- 8. Check your router for the mowers IP adress (and optionally set a static one)
+ 8. Check your router for the mowers IP address (and optionally set a static one)
 
  9. SSH to your mower *(the default credentials are above)*
 
 10. Change you password! (`passwd`)
 
-11. If you have `mower_config` and `openmower_version` configured you can now start openmower by executing `sudo systemctl start open_mower_ros`
-      - on slow SD cards the first start can take ~10min +
+11. If you have `mower_config.txt` and `openmower_version.txt` configured, the Open Mower software will start automatically. The first start can easily take more than 10min.
+    
+12. Check if everything runs fine by accessing the logs `sudo podman logs -f openmower`
 
-12. check if everything runs fine by accesing the logs `sudo podman logs -f open_mower_ros`
 
-13. If everything works you can set openmower to run at boot `sudo systemctl enable open_mower_ros`
-
-- If you later want to edit `mower_config` it is located on the pi at `/boot/openmower/mower_config`
-
-### Optinal
+### Optional
 
 - theoretically there is an auto update feature for podman but is it not tested yet
 
 
-For ROS specific commands (e.g. `rostopic echo`) use `podman exec -it open-mower /openmower_entrypoint.sh /bin/bash` to access ROS
+For ROS specific commands (e.g. `rostopic echo`) use `./start_ros_bash` in the `/home/openmower` directory. This will allow you to access ROS.

@@ -41,7 +41,8 @@ apt-get install --yes socat
 echo_green "Disabling podman auto update..."
 systemctl disable podman-auto-update.timer 
 
-
+echo_green "Eanbling OpenMower on boot"
+systemctl enable openmower
 
 #cleanup
 apt-get clean
