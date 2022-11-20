@@ -1,25 +1,31 @@
 #!/usr/bin/env bash
-# OpenOCD module
-# Installs OpenOCD with RP2040 and Pi4 GPIO support
+# CustomPiOS OpenOCD module
 # Written by Clemens Elflein
 # GPL V3
 ########
 
-
 # Source error handling, leave this in place
-set -x
-set -e
+set -ex
 
 source /common.sh
 install_cleanup_trap
 
-echo "Installing OpenOCD (RP2040 version with Pi4 GPIOs)"
-apt install -y --no-install-recommends git automake autoconf build-essential libtool libftdi-dev libusb-1.0-0-dev texinfo pkg-config rpi.gpio-common
+echo "Installing OpenOCD dependencys"
+apt-get update --allow-releaseinfo-change
+apt-get install --yes --no-install-recommends git autoconf automake build-essential pkg-config texinfo libtool libftdi-dev libusb-1.0-0-dev rpi.gpio-common
+
+echo "Installing OpenOCD"
 git clone https://github.com/raspberrypi/openocd.git --recursive --branch rp2040 --depth=1
 cd openocd
 ./bootstrap
 ./configure --enable-ftdi --enable-sysfsgpio --enable-bcm2835gpio
 make -j$(nproc)
-sudo make install
+make install
 cd ..
 rm -rf openocd
+
+
+
+#cleanup
+apt-get clean
+apt-get autoremove --yes
