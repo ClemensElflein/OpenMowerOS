@@ -2,8 +2,8 @@
 # Comitup hotspot configuration
 #
 
-ap_name: OpenMower-<nn>
-ap_password: OpenMower
+ap_name: openmower-<nn>
+ap_password: openmower
 
 
 

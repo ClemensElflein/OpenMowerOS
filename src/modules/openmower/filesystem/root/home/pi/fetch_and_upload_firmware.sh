@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source /boot/openmower/mower_config
+source /boot/openmower/mower_config.txt
 
 # remove old firmware
 rm -rf firmware_download

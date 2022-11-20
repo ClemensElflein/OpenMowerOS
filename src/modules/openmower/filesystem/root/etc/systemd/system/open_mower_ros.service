@@ -26,9 +26,9 @@ ExecStart=/usr/bin/podman run --conmon-pidfile %t/container-open_mower_ros.pid -
   --name open_mower_ros \
   --network=host \
   --volume /dev:/dev \
-  --volume /boot/openmower/mower_config:/config/mower_config.sh \
+  --volume /boot/openmower/mower_config.txt:/config/mower_config.sh \
   --volume /root/ros_home:/root \
-  --volume /root/ros_home/rosconsole.config:/config/rosconsole.config \
+  --volume /root/rosconsole.config:/config/rosconsole.config \
   --env ROSCONSOLE_CONFIG_FILE=/config/rosconsole.config \
   --env ROSOUT_DISABLE_FILE_LOGGING=True \
   --label io.containers.autoupdate=registry \
