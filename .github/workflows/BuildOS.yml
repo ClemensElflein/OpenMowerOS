@@ -1,0 +1,99 @@
+name: Build OpenMowerOS
+on:
+  workflow_dispatch:
+  push:
+    branches:
+#      - "**"
+#      - "main"
+      - "testing"
+    paths:
+      - "src/**"
+      - ".github/workflows/BuildOS.yml"
+    tags-ignore:
+      - "**"
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+    paths:
+      - "src/**"
+      - ".github/workflows/BuildOS.yml"
+
+# Allow to stop obsolete workflows
+concurrency:
+  group: ci-buildtrain-${{ github.ref }}-1
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install Dependencies
+        run: sudo apt-get update ; sudo apt-get install --yes coreutils p7zip-full qemu-user-static zip
+
+      - name: Checkout CustomPiOS
+        uses: actions/checkout@v3
+        with:
+          repository: "guysoft/CustomPiOS"
+          path: CustomPiOS
+
+      - name: Checkout OpenMowerOS
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ github.repository }}
+          path: repository
+          submodules: true
+
+      - name: Download Raspberry Pi OS Source Image
+        run: aria2c -d repository/src/image/ --seed-time=0 https://downloads.raspberrypi.org/raspios_lite_arm64_latest.torrent
+
+      - name: Comparing Checksums
+        run: |
+          cd repository/src/image
+          curl -JL https://downloads.raspberrypi.org/raspios_lite_arm64_latest.sha256 | awk '{print $1"  "$2}' | sha256sum -c
+
+      - name: Update CustomPiOS Paths
+        run: cd repository/src && ../../CustomPiOS/src/update-custompios-paths
+
+      - name: Build Image
+        run: sudo modprobe loop && cd repository/src && sudo bash -x ./build_dist && cd && sudo chown -R $USER ./*
+
+      - name: Copy output image
+        run: cp ${{ github.workspace }}/repository/src/workspace/*-raspios-*-lite.img openmoweros-raspios-lite-latest.img
+
+      - name: Upload failed Logfile
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-failed.log
+          path: repository/src/build.log
+
+      - name: Compress the image
+        shell: bash
+        run: |
+          CPU_COUNT="$(nproc)"
+          echo -e "\e[32mUsing ${CPU_COUNT} Cores for compression...\e[0m"
+          xz -efkvz9T"${CPU_COUNT}" openmoweros-raspios-lite-latest.img
+
+      - name: Calculating checksums
+        shell: bash
+        run: |
+          sha256sum openmoweros-raspios-lite-latest.img > openmoweros-raspios-lite-latest.img.sha256
+          sha256sum openmoweros-raspios-lite-latest.img.xz > openmoweros-raspios-lite-latest.img.xz.sha256
+
+      - name: Upload Compressed Image
+        uses: actions/upload-artifact@v3
+        with:
+          name: openmoweros-raspios-lite-latest.img.xz
+          path: openmoweros-raspios-lite-latest.img.xz
+
+      - name: Upload Compressed Image Checksum
+        uses: actions/upload-artifact@v3
+        with:
+          name: openmoweros-raspios-lite-latest.img.xz.sha256
+          path: openmoweros-raspios-lite-latest.img.xz.sha256
+
+      - name: Upload Image Checksum
+        uses: actions/upload-artifact@v3
+        with:
+          name: openmoweros-raspios-lite-latest.img.sha256
+          path: openmoweros-raspios-lite-latest.img.sha256

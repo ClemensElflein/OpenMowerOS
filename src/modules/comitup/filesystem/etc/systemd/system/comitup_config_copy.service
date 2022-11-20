@@ -1,0 +1,14 @@
+[Unit]
+Description=Copy user comitup.conf
+ConditionPathExists=/boot/comitup.conf
+Before=dhcpcd.service NetworkManager.service
+After=systemd-rfkill.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/cp /boot/comitup.conf /etc/comitup.conf ; /usr/bin/mv /boot/comitup.conf /boot/comitup.conf.settings-applied
+ExecStartPost=chmod 600 /etc/comitup.conf
+
+[Install]
+WantedBy=multi-user.target

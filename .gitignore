@@ -1,5 +1,15 @@
-
-build.log
+# Ignore workspace
 OpenMowerOS/src/workspace
+
+# Ignore src/image
+OpenMowerOS/src/image/**
+
+# Ignore build.log
+build.log
+
+# Ignore custompios_path
 OpenMowerOS/src/custompios_path
-OpenMowerOS/src/image
+
+# Ignore vagrant
+vagrant
+

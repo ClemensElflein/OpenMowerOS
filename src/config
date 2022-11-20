@@ -1,0 +1,34 @@
+# OpenMowerOS config
+# Written by DocGalaxyBlock (https://github.com/docgalaxyblock/)
+# GPL V3
+########
+
+export DIST_NAME=OpenMowerOS
+export DIST_VERSION=0.0.1
+
+export BASE_DISTRO=raspios64
+export BASE_ARCH=aarch64
+export BASE_USER="openmower"
+export BASE_USER_PASSWORD="openmower"
+export BASE_OVERRIDE_HOSTNAME="OpenMower"
+
+export MODULES="base,pkgupgrade,piconfig,podman,comitup,openocd,openmower"
+
+#export PKGUPGRADE_USE_PREINSTALLER=y
+#export PKGUPGRADE_PRE_INSTALL_PKGS="libsensors5 wavemon"
+
+#export BASE_IMAGE_ENLARGEROOT=2500
+#export BASE_IMAGE_RESIZEROOT=600
+# Compress not needed due compression done in workflow
+#export BASE_RELEASE_COMPRESS=no
+
+#export DOWNLOAD_URL_CHECKSUM="https://downloads.raspberrypi.org/raspios_lite_arm64_latest.sha256"
+#export DOWNLOAD_URL_IMAGE="https://downloads.raspberrypi.org/raspios_lite_arm64_latest.torrent"
+
+
+
+# rpi-imager json generator settings
+export RPI_IMAGER_NAME="${DIST_NAME}"
+export RPI_IMAGER_DESCRIPTION="The default image to use with the OpenMower software"
+export RPI_IMAGER_WEBSITE="https://github.com/ClemensElflein/OpenMowerOS"
+export RPI_IMAGER_ICON="https://raw.githubusercontent.com/guysoft/CustomPiOS/devel/media/rpi-imager-CustomPiOS.png"
