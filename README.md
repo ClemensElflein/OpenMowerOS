@@ -1,5 +1,7 @@
 # OpenMowerOS
 
+[![OpenMower header](.github/img/open_mower_header.jpg)](https://github.com/ClemensElflein/OpenMower)
+
 *Based on [CustomPiOS](https://github.com/guysoft/CustomPiOS)*
 
 This repository contains the official OpenMowerOS image for running the [OpenMower](https://github.com/ClemensElflein/OpenMower) project.
