@@ -7,6 +7,7 @@ Description=Podman container - openmower.service
 Documentation=man:podman-generate-systemd(1)
 Wants=network.target
 After=network-online.target NetworkManager.service
+Conflicts=openmower-debug.service
 StartLimitInterval=120
 StartLimitBurst=10
 
