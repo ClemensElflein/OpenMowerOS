@@ -90,5 +90,5 @@ Currently this is based on the latest RaspberryPi OS with the following changes:
 
 - theoretically there is an auto update feature for podman but is it not tested yet
 
-
 For ROS specific commands (e.g. `rostopic echo`) use `./start_ros_bash` in the `/home/openmower` directory. This will allow you to access ROS.
+
