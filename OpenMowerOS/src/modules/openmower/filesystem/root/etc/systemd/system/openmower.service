@@ -35,10 +35,7 @@ ExecStart=/usr/bin/podman run --conmon-pidfile %t/container-openmower.pid --cidf
   --label io.containers.autoupdate=registry \
   ghcr.io/clemenselflein/open_mower_ros:releases-${OM_VERSION}
 
-#ExecStartPost=/usr/bin/podman image prune --all --force
-
 ExecStop=/usr/bin/podman stop --ignore --cidfile %t/container-openmower.ctr-id -t 10
-ExecStopPost=/usr/bin/podman rm --ignore --force --cidfile %t/container-openmower.ctr-id
 PIDFile=%t/container-openmower.pid
 
 [Install]

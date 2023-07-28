@@ -31,11 +31,7 @@ ExecStart=/usr/bin/podman run --conmon-pidfile %t/container-openmower-debug.pid 
   --label io.containers.autoupdate=image \
   ghcr.io/clemenselflein/open_mower_ros:releases-${OM_VERSION}
 
-#ExecStartPost=/usr/bin/podman image prune --force --filter image=open_mower_ros
-
 ExecStop=/usr/bin/podman stop --ignore --cidfile %t/container-openmower-debug.ctr-id -t 10
-
-ExecStopPost=/usr/bin/podman rm --ignore --force --cidfile %t/container-openmower-debug.ctr-id
 
 PIDFile=%t/container-openmower-debug.pid
 
