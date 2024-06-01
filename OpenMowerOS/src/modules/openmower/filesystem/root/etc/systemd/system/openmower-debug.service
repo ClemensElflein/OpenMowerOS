@@ -29,7 +29,7 @@ ExecStart=/usr/bin/podman run --conmon-pidfile %t/container-openmower-debug.pid 
   --volume /boot/openmower/mower_config.txt:/config/mower_config.sh \
   --volume /root/ros_home:/root \
   --label io.containers.autoupdate=image \
-  ghcr.io/clemenselflein/open_mower_ros:releases-${OM_VERSION}
+  ghcr.io/clemenselflein/open_mower_ros:${OM_APP_VERSION}
 
 #ExecStartPost=/usr/bin/podman image prune --force --filter image=open_mower_ros
 

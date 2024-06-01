@@ -33,7 +33,7 @@ ExecStart=/usr/bin/podman run --conmon-pidfile %t/container-openmower.pid --cidf
   --env ROSCONSOLE_CONFIG_FILE=/config/rosconsole.config \
   --env ROSOUT_DISABLE_FILE_LOGGING=True \
   --label io.containers.autoupdate=registry \
-  ghcr.io/clemenselflein/open_mower_ros:releases-${OM_VERSION}
+  ghcr.io/clemenselflein/open_mower_ros:${OM_APP_VERSION}
 
 #ExecStartPost=/usr/bin/podman image prune --all --force
 

@@ -1,11 +1,26 @@
-# select which version of the OpenMower software to run.
+# Choose the version of OpenMower software you want to run.
 #
-# - beta:   This one is the _most stable_ one of the three. I try to keep this as stable as possible.
-# - alpha:  For people who like to test stuff. This one will be updated fairly often as well and without notice. Only use it, if you want to be among the first people to get new features, but prepare to have issues.
-# - edge:   This one changes very often. Only use it if you want to take part in the development or are asked to use it by a developer.
+# We use a system called semantic versioning (semver) for our software builds.
+# This helps you know what kind of updates are included in each version.
 #
-# Check the https://github.com/ClemensElflein/open_mower_ros repo for the current state.
+# For example, if we release version 1.2.3:
+# - The `1` indicates the major version, which changes when there are big updates that might not be compatible with older versions.
+# - The `2` indicates the minor version, which changes when new features are added that are still compatible with the previous major version.
+# - The `3` indicates the patch version, which changes when there are small fixes or improvements.
+#
+# Each version like 1.2.3 will also have tags `1` and `1.2`. These tags help you stay updated with all the latest
+# fixes and features within a major or minor series.
+# So, if you use tag `1`, you will get the latest updates for all 1.x.x versions,
+# and with `1.2`, you'll get updates for all 1.2.x versions.
+#
+# There's also an `edge` version, built from the latest master branch. These are prerelease versions that look
+# like `1.2.3-edge.nn`. The number after `edge` changes very frequently and includes the latest developments.
+# It's great if you want to try the newest features right away or if you're involved in the development process.
+# However, be aware that these versions might have bugs and are not as stable as the official releases.
+#
+# Check the https://github.com/ClemensElflein/open_mower_ros/releases for the current state.
 
-OM_VERSION="beta"
+OM_APP_VERSION="1.0"
 
-export OM_VERSION
+# For compatibility
+OM_VERSION=$OM_APP_VERSION
