@@ -2,15 +2,15 @@
 
 [![OpenMower header](.github/img/open_mower_header.jpg)](https://github.com/ClemensElflein/OpenMower)
 
-*Based on [CustomPiOS](https://github.com/guysoft/CustomPiOS)*
+~~*Based on [CustomPiOS](https://github.com/guysoft/CustomPiOS)*~~
 
 This repository contains the official OpenMowerOS image for running the [OpenMower](https://github.com/ClemensElflein/OpenMower) project.
 
-Currently this is based on the latest RaspberryPi OS with the following changes:
+Currently this is based on the latest Debian 13.x (trixie) OS with the following changes:
 
 - **[Comitup](https://github.com/davesteele/comitup)** opens a WiFi hotspot if no known network can be found. Connect to it with any device to connect the robot to your network.
 
-- **podman** fetches the latest version of the open-mower software and runs it for you automatically.
+TODO - **podman** fetches the latest version of the open-mower software and runs it for you automatically.
 
 - **OpenOCD** is installed with GPIO support, so you can flash your pico's firmware from the Pi4
 
@@ -33,9 +33,9 @@ Currently this is based on the latest RaspberryPi OS with the following changes:
 - **default hotspot password**: openmower
 
 
-- **mower_config.txt**: Is in the /boot/openmower directory and can be edited with any PC after flashing the SD card
+TODO - **mower_config.txt**: Is in the /boot/openmower directory and can be edited with any PC after flashing the SD card
 
-- **mower_version.txt**: Is in the /boot/openmower directory and can be used to select the version to run.
+TODO - **mower_version.txt**: Is in the /boot/openmower directory and can be used to select the version to run.
 
 ***
 
@@ -43,19 +43,21 @@ Currently this is based on the latest RaspberryPi OS with the following changes:
 
 ### Required
 
- 1. Burn the latest image available to an SD card.
+ 1. Burn the latest image available to an SD card. Preferably with [**Raspberry Pi** Imager](https://www.raspberrypi.com/software/).
 
- 2. Open the SD cards `boot` partition and there the `openmower` folder.
+ 2. Optionally enter your Wi-Fi Credentials within the custom image settings.
 
- 3. Edit the `hotspot.txt` file to configure the fallback hotspot. **Change the password and remember it!**
+ 3. Open the SD cards `boot` partition and there the `openmower` folder.
 
-    You find a `hotspot.example` in there too.
+ ~~3. Edit the `hotspot.txt` file to configure the fallback hotspot. **Change the password and remember it!**~~
 
-    On boot the system will apply the settings and rename the `hotspot.txt` to `hotspot.settings-applied`.
+    ~~You find a `hotspot.example` in there too.~~
 
- 4. *(Open the `openmower_version.txt` and read its explanation. Optionally select a different version.)*
+    ~~On boot the system will apply the settings and rename the `hotspot.txt` to `hotspot.settings-applied`.~~
 
- 5. Edit the `mower_config.txt` file:
+TODO 4. *(Open the `openmower_version.txt` and read its explanation. Optionally select a different version.)*
+
+TODO 5. Edit the `mower_config.txt` file:
 
     - check for the latest revision of that file [here](https://github.com/ClemensElflein/open_mower_ros/blob/main/src/open_mower/config/mower_config.sh.example).
 

@@ -1,6 +1,0 @@
-# CustomPiOS module : comitup config
-# Written by DocGalaxyBlock (https://github.com/docgalaxyblock/)
-# GPL V3
-########
-
-[ -n "$COMITUP_COPY_SERVICE" ] || COMITUP_COPY_SERVICE=yes

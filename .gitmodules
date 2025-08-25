@@ -1,3 +1,7 @@
 [submodule "CustomPiOS"]
 	path = CustomPiOS
 	url = https://github.com/ClemensElflein/CustomPiOS.git
+
+[submodule "ext/pi-gen"]
+	path = ext/pi-gen
+	url = https://github.com/RPi-Distro/pi-gen

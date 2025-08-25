@@ -1,13 +1,46 @@
-#!/bin/bash
-# Call this script to build the image
+#!/usr/bin/env bash
+set -euo pipefail
 
-if compgen -G "./OpenMowerOS/src/image/*" > /dev/null; then
-    echo "Image exists, skipping download."
-else
-    echo "No image found, downloading latest Raspbiann image."
-    bash -c "cd OpenMowerOS/src && mkdir -p image && cd image && wget -c --trust-server-names 'https://downloads.raspberrypi.org/raspios_lite_arm64_latest'"
+# Wrapper to build OpenMowerOS using the pi-gen submodule
+# Requirements: docker or rootless docker with sudo wrapper
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PIGEN_DIR="${ROOT_DIR}/ext/pi-gen"
+CONFIG_FILE="${ROOT_DIR}/pi-gen-config/config"
+
+# Ensure standard admin tools are in PATH for non-root users on Debian
+export PATH="/usr/sbin:/sbin:${PATH}"
+
+if [ ! -d "${PIGEN_DIR}" ] || ! git -C "${PIGEN_DIR}" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    echo "pi-gen submodule missing. Initialize it first:"
+    echo "  git submodule update --init --recursive ext/pi-gen"
+    exit 1
 fi
 
-echo "Starting Image Build"
-sudo bash -c "./OpenMowerOS/src/build_dist"
+if [ ! -f "${CONFIG_FILE}" ]; then
+    echo "Config file not found at ${CONFIG_FILE}"
+    exit 1
+fi
 
+export PIGEN_DOCKER_OPTS="${PIGEN_DOCKER_OPTS:-} --volume ${ROOT_DIR}/custom-stages:/custom-stages:ro"
+
+# Reuse existing build container unless explicitly overridden
+export CONTINUE="${CONTINUE:-1}"
+
+# If FRESH=1 is set, force a clean run and remove any previous pi-gen containers
+if [ "${FRESH:-0}" = "1" ]; then
+    export CONTINUE=0
+    # Use docker or sudo docker depending on availability
+    DOCKER_BIN=${DOCKER:-docker}
+    if ! ${DOCKER_BIN} ps >/dev/null 2>&1; then
+        DOCKER_BIN="sudo ${DOCKER_BIN}"
+    fi
+    # Attempt to remove any existing containers; ignore errors
+    (${DOCKER_BIN} rm -v pigen_work_cont >/dev/null 2>&1 || true)
+    (${DOCKER_BIN} rm -v pigen_work >/dev/null 2>&1 || true)
+    # Ensure loop module is available on host (best effort)
+    (lsmod | grep -q '^loop' || sudo modprobe loop) >/dev/null 2>&1 || true
+fi
+
+cd "${PIGEN_DIR}"
+exec ./build-docker.sh -c "${CONFIG_FILE}" "$@"

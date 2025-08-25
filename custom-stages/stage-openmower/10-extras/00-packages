@@ -1,0 +1,6 @@
+# Install a few helpful packages (no recommends to keep image lean)
+mc
+openocd
+wavemon
+aptitude
+socat

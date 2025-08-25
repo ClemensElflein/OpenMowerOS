@@ -1,19 +1,7 @@
-# OpenMowerOS config
-# Written by DocGalaxyBlock (https://github.com/docgalaxyblock/)
-# GPL V3
-########
-
 export DIST_NAME=OpenMowerOS
 export DIST_VERSION=0.1.0
 
-export BASE_DISTRO=raspios64
-export BASE_ARCH=aarch64
-export BASE_USER="openmower"
-export BASE_USER_PASSWORD="openmower"
-export BASE_OVERRIDE_HOSTNAME="openmower"
-
 export MODULES="base,pkgupgrade,piconfig,podman,comitup,openocd,openmower"
-
 
 # rpi-imager json generator settings
 export RPI_IMAGER_NAME="${DIST_NAME}"
