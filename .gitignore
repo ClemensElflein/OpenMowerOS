@@ -13,3 +13,6 @@ OpenMowerOS/src/custompios_path
 # Ignore vagrant
 vagrant
 
+# Stop tracking (but keep locally) the legacy CustomPiOS dir; user will prune files manually
+CustomPiOS/
+
