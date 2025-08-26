@@ -22,7 +22,16 @@ if [ ! -f "${CONFIG_FILE}" ]; then
     exit 1
 fi
 
+# Always mount our custom stages into the container
 export PIGEN_DOCKER_OPTS="${PIGEN_DOCKER_OPTS:-} --volume ${ROOT_DIR}/custom-stages:/custom-stages:ro"
+
+# Optionally map loop devices explicitly into the container (helps on some hosts)
+if [ "${MAP_LOOP_DEVICES:-0}" = "1" ]; then
+    for n in 0 1 2 3 4 5 6 7; do
+        export PIGEN_DOCKER_OPTS+=" --device=/dev/loop${n}"
+    done
+    export PIGEN_DOCKER_OPTS+=" --device=/dev/loop-control"
+fi
 
 # Reuse existing build container unless explicitly overridden
 export CONTINUE="${CONTINUE:-1}"
@@ -40,6 +49,13 @@ if [ "${FRESH:-0}" = "1" ]; then
     (${DOCKER_BIN} rm -v pigen_work >/dev/null 2>&1 || true)
     # Ensure loop module is available on host (best effort)
     (lsmod | grep -q '^loop' || sudo modprobe loop) >/dev/null 2>&1 || true
+    # Detach stale loop devices on host to avoid losetup confusion
+    (sudo losetup -D) >/dev/null 2>&1 || true
+fi
+
+# Optional manual loop cleanup without full FRESH rebuild
+if [ "${CLEAN_LOOPS:-0}" = "1" ]; then
+    (sudo losetup -D) >/dev/null 2>&1 || true
 fi
 
 cd "${PIGEN_DIR}"

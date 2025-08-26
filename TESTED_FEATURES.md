@@ -11,8 +11,8 @@ Legend: ✅ Pass · ❌ Fail · 🟡 Todo · 🔁 Retry · 🧪 Manual-only
 | SSH enabled      | SSH active on first boot                  |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |      ✅       |      🟡       |      🟡       |
 | Imager Wi‑Fi     | Preseeded Wi‑Fi connects on first boot    |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |
 | Imager user/pass | Applied when configured                   |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |
-| No known Wi‑Fi   | Comitup AP appears (default SSID pattern) |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |      🔁       |      🟡       |      🟡       |
-| AP portal        | Able to configure Wi‑Fi, then joins WLAN  |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |
+| No known Wi‑Fi   | Comitup AP appears (default SSID pattern) |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |      ✅       |      🟡       |      🟡       |
+| AP portal        | Able to configure Wi‑Fi, then joins WLAN  |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |      ✅       |      🟡       |      🟡       |
 | SSH              | Reachable after network is up             |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |      ✅       |      🟡       |      🟡       |
 
 ## Notes

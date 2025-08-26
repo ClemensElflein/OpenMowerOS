@@ -30,7 +30,7 @@ TODO - **podman** fetches the latest version of the open-mower software and runs
 
 - **hotspot SSID**: openmower-\<somenumber\>
 
-- **default hotspot password**: openmower
+~~- **default hotspot password**: openmower~~
 
 
 TODO - **mower_config.txt**: Is in the /boot/openmower directory and can be edited with any PC after flashing the SD card
@@ -43,11 +43,11 @@ TODO - **mower_version.txt**: Is in the /boot/openmower directory and can be use
 
 ### Required
 
- 1. Burn the latest image available to an SD card. Preferably with [**Raspberry Pi** Imager](https://www.raspberrypi.com/software/).
+1. Burn the latest image available to an SD card. Preferably with [**Raspberry Pi** Imager](https://www.raspberrypi.com/software/).
 
- 2. Optionally enter your Wi-Fi Credentials within the custom image settings.
+2. *Optional:* Enter your Wi-Fi Credentials within the custom image settings.
 
- 3. Open the SD cards `boot` partition and there the `openmower` folder.
+~~ 3. Open the SD cards `boot` partition and there the `openmower` folder.~~
 
  ~~3. Edit the `hotspot.txt` file to configure the fallback hotspot. **Change the password and remember it!**~~
 
@@ -65,27 +65,30 @@ TODO 5. Edit the `mower_config.txt` file:
 
     - add your changes to that file.
 
- 6. Eject the card, put it in the mower (do not close the mower yet) and turn it on.
+6. Eject the card, put it in the mower (do not close the mower yet) and turn it on.
 
- 7. After a short time the hotspot wifi should appear - connect to it.
+7. *Optional:* If you didn't entered your Wi-Fi Credentials within the Raspberry Pi Imager custom settings
+   in step 2., or entered the wrong ones:
 
-    - Once you are connected to the hotspot you default browser should automatically open and you should see the wifi configuration webpage:
+   1. After a short time an "OpenMower-\<somenumber>" wifi hotspot should appear - connect to it.
+
+   2. Once you are connected to the hotspot your default browser should automatically open and you should see the wifi configuration webpage (if it doesn't open automatically, open http://10.41.0.1 with your browser):
 
       <p align="center"><img src=".github/img/comitup_hotspot.png" style="width:50%"></p>
 
-    - Click on your home wifi and fill in you password.
+   3. Click on your home wifi and fill in you password.
 
-    - The hotspot will disappear and the mower should connect to your wifi
+   4. The hotspot will disappear and the mower should connect to your wifi
 
- 8. Check your router for the mowers IP address (and optionally set a static one)
+8. Try pinging your mower via `ping openmower`. If host openmower can't be found, check your router for the mowers IP address
 
- 9. SSH to your mower *(the default credentials are above)*
+9.  SSH to your mower via `ssh openmower@openmower` or `ssh openmower@<your mowers IP address>` (password "openmower")
 
-10. Change you password! (`passwd`)
+8.  Change your password! (`passwd`)
 
-11. If you have `mower_config.txt` and `openmower_version.txt` configured, the Open Mower software will start automatically. The first start can easily take more than 10min.
+TODO 9.  If you have `mower_config.txt` and `openmower_version.txt` configured, the Open Mower software will start automatically. The first start can easily take more than 10min.
     
-12. Check if everything runs fine by accessing the logs `sudo podman logs -f openmower`
+TODO 10. Check if everything runs fine by accessing the logs `sudo podman logs -f openmower`
 
 
 ### Optional
