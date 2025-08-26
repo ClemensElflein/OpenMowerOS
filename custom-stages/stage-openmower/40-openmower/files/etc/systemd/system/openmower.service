@@ -5,11 +5,14 @@ After=docker.service network-online.target NetworkManager.service
 
 [Service]
 Type=simple
+User=openmower
+Group=openmower
+SupplementaryGroups=docker
 Restart=always
 RestartSec=15s
 TimeoutStartSec=1h
 TimeoutStopSec=120s
-ExecStart=/usr/local/sbin/openmower-run.sh
+ExecStart=/usr/local/sbin/openmower-service.sh
 ExecStop=/usr/bin/docker stop -t 10 openmower
 ExecStopPost=/usr/bin/docker rm -f openmower
 
