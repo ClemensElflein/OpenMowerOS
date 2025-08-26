@@ -85,10 +85,11 @@ jobs:
         run: |
           ls -l ext/pi-gen/deploy || true
 
-      - name: Rename deploy artifact to OpenMowerOS_YYYYMMDD.zip
+      - name: Collect artifacts to ./artifacts
         shell: bash
         run: |
           set -euo pipefail
+          mkdir -p artifacts
           latest_zip=$(ls -t ext/pi-gen/deploy/*.zip 2>/dev/null | head -n1 || true)
           if [[ -z "$latest_zip" ]]; then
             echo "No ZIP found in ext/pi-gen/deploy" >&2
@@ -100,18 +101,20 @@ jobs:
           else
             date_compact=$(date -u +%Y%m%d)
           fi
-          target="ext/pi-gen/deploy/OpenMowerOS_${date_compact}.zip"
-          if [[ "${latest_zip}" != "${target}" ]]; then
-            mv -f "${latest_zip}" "${target}"
-          fi
+          target="artifacts/OpenMowerOS_${date_compact}.zip"
+          # Copy (not move) from root-owned deploy dir to our writable workspace dir
+          cp -f "${latest_zip}" "${target}"
+          # Copy any .info files for reference
+          cp -f ext/pi-gen/deploy/*.info artifacts/ 2>/dev/null || true
+          ls -l artifacts
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: openmoweros-pigen-build
           path: |
-            ext/pi-gen/deploy/OpenMowerOS_*.zip
-            ext/pi-gen/deploy/*.info
+            artifacts/OpenMowerOS_*.zip
+            artifacts/*.info
 
       - name: Publish release/prerelease
         if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/heads/main') || startsWith(github.ref, 'refs/tags/')
@@ -122,4 +125,4 @@ jobs:
           prerelease: ${{ steps.rel.outputs.prerelease }}
           title: OpenMowerOS ${{ steps.rel.outputs.release_tag }}
           files: |
-            ext/pi-gen/deploy/OpenMowerOS_*.zip
+            artifacts/OpenMowerOS_*.zip
