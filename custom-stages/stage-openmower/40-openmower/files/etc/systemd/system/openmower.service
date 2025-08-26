@@ -1,0 +1,17 @@
+[Unit]
+Description=OpenMower (Docker)
+Wants=network-online.target
+After=docker.service network-online.target NetworkManager.service
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=15s
+TimeoutStartSec=1h
+TimeoutStopSec=120s
+ExecStart=/usr/local/sbin/openmower-run.sh
+ExecStop=/usr/bin/docker stop -t 10 openmower
+ExecStopPost=/usr/bin/docker rm -f openmower
+
+[Install]
+WantedBy=multi-user.target
