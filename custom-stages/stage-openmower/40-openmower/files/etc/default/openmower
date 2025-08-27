@@ -1,0 +1,21 @@
+# Defaults for OpenMower service
+
+# Select which version of the OpenMower software to run.
+#
+# - releases-beta:   This one is the _most stable_ one of the three. I try to keep this as stable as possible.
+# - releases-alpha:  For people who like to test stuff. This one will be updated fairly often as well and without notice. Only use it, if you want to be among the first people to get new features, but prepare to have issues.
+# - releases-edge:   This one changes very often. Only use it if you want to take part in the development or are asked to use it by a developer.
+# - v2:              This is the development branch for OpenMower V2 carrier boards. It contains the latest features and fixes, but might be unstable at times.
+# - v2-sabo:         This is the development branch for OpenMower V2 SABO carrier board.  It contains the latest features and fixes, but might be unstable at times.
+#
+# Check the https://github.com/ClemensElflein/open_mower_ros repo for the current state.
+#
+# ATTENTION: Whenever you chang the version, your need to pull that version afterwards by running `openmower-pull.sh`
+OM_VERSION="choose-your-version"
+
+
+# Once your mower is working, set to false to reduce log verbosity and by this SD card wear.
+OM_DEBUG=true
+
+# If you're a developer, you might change this to your URL
+OM_REPO="ghcr.io/clemenselflein/open_mower_ros"

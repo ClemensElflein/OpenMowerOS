@@ -10,6 +10,7 @@ Group=openmower
 SupplementaryGroups=docker
 Restart=always
 RestartSec=15s
+RestartPreventExitStatus=77
 TimeoutStartSec=1h
 TimeoutStopSec=120s
 ExecStart=/usr/local/sbin/openmower-service.sh

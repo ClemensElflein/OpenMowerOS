@@ -1,19 +1,20 @@
 #!/bin/bash
 set -euo pipefail
 
-CFG=/home/openmower/mower_config.sh
-VER=/boot/openmower/openmower_version.txt
+# Defaults (service-level)
+if [ -r /etc/default/openmower ]; then
+    . /etc/default/openmower
+fi
 
-# Defaults
-OM_VERSION=${OM_VERSION:-latest}
-OM_IMAGE=${OM_IMAGE:-}
+# Check if OM_VERSION is still the placeholder from /etc/default/openmower
+if [ "${OM_VERSION}" = "choose-your-version" ]; then
+    MSG="OM_VERSION is still set to 'choose-your-version'.\nPlease edit /etc/default/openmower and set OM_VERSION to one of the documented values, then try again."
+    # Print to stdout (captured by systemd journal) and also log explicitly
+    echo -e "$MSG"
+    exit 77
+fi
 
-# Load config and version if present
-[ -r "$CFG" ] && . "$CFG" || true
-[ -r "$VER" ] && . "$VER" || true
-
-OM_VERSION=${OM_VERSION:-latest}
-OM_IMAGE=${OM_IMAGE:-ghcr.io/clemenselflein/open_mower_ros:releases-${OM_VERSION}}
+OM_IMAGE=${OM_IMAGE:-${OM_REPO}:${OM_VERSION}}
 
 echo "Pulling $OM_IMAGE ..."
 exec /usr/bin/docker pull "$OM_IMAGE"
