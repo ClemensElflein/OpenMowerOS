@@ -3,8 +3,8 @@
 export DEBIAN_FRONTEND=noninteractive
 apt-get update
 
-# Install Docker engine from Debian (Trixie) and the Compose v2 plugin
-apt-get install -y --no-install-recommends docker.io docker-compose-plugin
+# Install Docker engine from Debian (Trixie)
+apt-get install -y --no-install-recommends docker.io
 
 # Enable the Docker daemon
 systemctl enable docker.service || true
