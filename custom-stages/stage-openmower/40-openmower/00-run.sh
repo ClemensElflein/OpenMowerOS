@@ -9,7 +9,7 @@ install -m 0664 -D "$STAGE_DIR/files/etc/systemd/system/openmower.service" "$ROO
 install -m 0775 -D "$STAGE_DIR/files/usr/local/sbin/openmower-service.sh" "$ROOTFS_DIR/usr/local/sbin/openmower-service.sh"
 install -m 0775 -D "$STAGE_DIR/files/usr/local/bin/openmower-pull.sh" "$ROOTFS_DIR/usr/local/bin/openmower-pull.sh"
 install -m 0664 -D "$STAGE_DIR/files/etc/default/openmower" "$ROOTFS_DIR/etc/default/openmower"
-install -m 0664 -D "$STAGE_DIR/home/openmower/mower_params.yaml" "$ROOTFS_DIR/home/openmower/mower_params.yaml"
+install -m 0664 -D "$STAGE_DIR/files/home/openmower/mower_params.yaml" "$ROOTFS_DIR/home/openmower/mower_params.yaml"
 
 # Seed external config if absent and ensure ownership
 if on_chroot id -u openmower >/dev/null 2>&1; then
