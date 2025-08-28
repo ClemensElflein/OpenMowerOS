@@ -2,23 +2,12 @@
 
 [![OpenMower header](.github/img/open_mower_header.jpg)](https://github.com/ClemensElflein/OpenMower)
 
-~~*Based on [CustomPiOS](https://github.com/guysoft/CustomPiOS)*~~
+This repository contains the official OpenMowerOS image for running the [OpenMower](https://github.com/ClemensElflein/OpenMower) project on your OM's Pi4/CM4.
 
-This repository contains the official OpenMowerOS image for running the [OpenMower](https://github.com/ClemensElflein/OpenMower) project.
+➡️ What’s new in the latest release? See [WHATSNEW.md](./WHATSNEW.md).
 
-Currently this is based on the latest Debian 13.x (trixie) OS with the following changes:
 
-- **[Comitup](https://github.com/davesteele/comitup)** opens a WiFi hotspot if no known network can be found. Connect to it with any device to connect the robot to your network.
-
-TODO - **podman** fetches the latest version of the open-mower software and runs it for you automatically.
-
-- **OpenOCD** is installed with GPIO support, so you can flash your pico's firmware from the Pi4
-
-- **socat** allows you to redirect your Ardusimple to u-center for configuration
-
-***
-
-## Important Information
+## Reference Information
 
 - **hostname**: openmower
 
@@ -28,14 +17,8 @@ TODO - **podman** fetches the latest version of the open-mower software and runs
 
 - **ssh**: enabled on port 22
 
-- **hotspot SSID**: openmower-\<somenumber\>
+- **hotspot SSID**: OpenMower-\<somenumber\> (no password)
 
-~~- **default hotspot password**: openmower~~
-
-
-TODO - **mower_config.txt**: Is in the /boot/openmower directory and can be edited with any PC after flashing the SD card
-
-TODO - **mower_version.txt**: Is in the /boot/openmower directory and can be used to select the version to run.
 
 ***
 
@@ -45,30 +28,19 @@ TODO - **mower_version.txt**: Is in the /boot/openmower directory and can be use
 
 1. Burn the latest image available to an SD card. Preferably with [**Raspberry Pi** Imager](https://www.raspberrypi.com/software/).
 
-2. *Optional:* Enter your Wi-Fi Credentials within the custom image settings.
+2. ***Option A: Pi-Imager-Configuration***<br>
+   When asked by Pi Imager, you may change some custom settings:
+   1. Like shown here, but **never** use another username than `openmower`!<br>
+   ![General Settings](.github/img/rpimager_general.png)
+   1. You may also add your SSH's public key for quicker SSH login,
+   but login via password remains active (even if it's a radio selector)<br>
+   ![SSH Settings](.github/img/rpimager_ssh.png)
+   
 
-~~ 3. Open the SD cards `boot` partition and there the `openmower` folder.~~
+1. Once written, eject the card, put it in the mower and turn it on.
 
- ~~3. Edit the `hotspot.txt` file to configure the fallback hotspot. **Change the password and remember it!**~~
-
-    ~~You find a `hotspot.example` in there too.~~
-
-    ~~On boot the system will apply the settings and rename the `hotspot.txt` to `hotspot.settings-applied`.~~
-
-TODO 4. *(Open the `openmower_version.txt` and read its explanation. Optionally select a different version.)*
-
-TODO 5. Edit the `mower_config.txt` file:
-
-    - check for the latest revision of that file [here](https://github.com/ClemensElflein/open_mower_ros/blob/main/src/open_mower/config/mower_config.sh.example).
-
-    - if the files differ apply the newest changes.
-
-    - add your changes to that file.
-
-6. Eject the card, put it in the mower (do not close the mower yet) and turn it on.
-
-7. *Optional:* If you didn't entered your Wi-Fi Credentials within the Raspberry Pi Imager custom settings
-   in step 2., or entered the wrong ones:
+1. ***Option B: Comitup-Hotspot***<br>
+If you didn't entered your Wi-Fi Credentials when asked for the custom settings in the Raspberry Pi Imager (see step 2.), or even accidentally entered the wrong ones:
 
    1. After a short time an "OpenMower-\<somenumber>" wifi hotspot should appear - connect to it.
 
@@ -78,22 +50,30 @@ TODO 5. Edit the `mower_config.txt` file:
 
    3. Click on your home wifi and fill in you password.
 
-   4. The hotspot will disappear and the mower should connect to your wifi
+   4. The hotspot will disappear and the mower should connect to your wifi.
 
-8. Try pinging your mower via `ping openmower`. If host openmower can't be found, check your router for the mowers IP address
+1. Try pinging your mower via `ping openmower` (or the hostname you entered during Pi Imager). If the host can't be found, check your router for the mowers IP address.
 
-9.  SSH to your mower via `ssh openmower@openmower` or `ssh openmower@<your mowers IP address>` (password "openmower")
+1.  SSH to your mower via `ssh openmower@openmower` or even `ssh openmower@<your hostname or mowers IP address>` (password "openmower" or the one your entered during Pi Imager).
 
-8.  Change your password! (`passwd`)
+1. ***Option B: Comitup-Hotspot***<br>
+   1. Change your password! (`passwd`).
+   1. Use `raspi-config` to change keyboard, timezone, WLAN country and the like.
 
-TODO 9.  If you have `mower_config.txt` and `openmower_version.txt` configured, the Open Mower software will start automatically. The first start can easily take more than 10min.
-    
-TODO 10. Check if everything runs fine by accessing the logs `sudo podman logs -f openmower`
+1. Edit `nano /etc/default/openmower` and change `OM_VERSION` to your preferred one.
+
+1. Pull the selected `OM_VERSION` by running `openmower-pull.sh`.
+
+1. Edit `nano ~/mower_config.sh` file, read carefully and modify to your needs.
+
+1. TODO: Restart openmower service via `systemctl restart openmower`
+
+1. TODO: Check if everything runs fine by accessing the logs `docker logs -f openmower`
 
 
 ### Optional
 
-- theoretically there is an auto update feature for podman but is it not tested yet
+TODO: - theoretically there is an auto update feature for podman but is it not tested yet
 
-For ROS specific commands (e.g. `rostopic echo`) use `./start_ros_bash` in the `/home/openmower` directory. This will allow you to access ROS.
+FIXME: For ROS specific commands (e.g. `rostopic echo`) use `./start_ros_bash` in the `/home/openmower` directory. This will allow you to access ROS.
 
