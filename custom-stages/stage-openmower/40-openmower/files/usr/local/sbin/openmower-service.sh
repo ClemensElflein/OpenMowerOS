@@ -3,19 +3,33 @@ set -euo pipefail
 
 # Service wrapper (not user-facing): prepares env and runs the container attached
 
+# libbash (colors). Ensure TERM is set under systemd and prefer colorPrintN.
+if [ -f /usr/lib/bash/colors.sh ]; then
+    source /usr/lib/bash/colors.sh || true
+fi
+
 # Defaults (service-level)
 if [ -r /etc/default/openmower ]; then
     . /etc/default/openmower
 fi
+
 OM_DEBUG=${OM_DEBUG:-true}
 OM_AUTOPULL=${OM_AUTOPULL:-true}
 
+# Avoid "tput: No value for $TERM" when running under systemd
+if [ -z "${TERM:-}" ]; then
+    export TERM=ansi
+fi
+
 # If OM_VERSION is still the placeholder from /etc/default/openmower, quit early with a clear message
-if [ "${OM_VERSION}" = "choose-your-version" ]; then
-    MSG="OM_VERSION is still set to 'choose-your-version'.\nPlease edit /etc/default/openmower and set OM_VERSION to one of the documented values, then restart the service via `sudo systemctl restart openmower`."
+if [ "${OM_VERSION:-}" = "choose-your-version" ]; then
+    MSG1="OM_VERSION is still set to 'choose-your-version'."
+    MSG2="Please edit /etc/default/openmower and set OM_VERSION to one of the documented values, then restart the service via (sudo systemctl restart openmower)."
     # Print to stdout (captured by systemd journal) and also log explicitly
-    echo -e "$MSG"
-    /usr/bin/logger -t openmower-service "$MSG" || true
+    colorPrintN_safe Red "$MSG1"
+    colorPrintN_safe Yellow "$MSG2"
+    /usr/bin/logger -p user.err -t openmower-service "$MSG1" || true
+    /usr/bin/logger -p user.notice -t openmower-service "$MSG2" || true
     # Exit with special code so systemd won't restart the unit in a loop
     exit 77
 fi
