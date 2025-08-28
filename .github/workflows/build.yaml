@@ -86,6 +86,7 @@ jobs:
           ls -l ext/pi-gen/deploy || true
 
       - name: Collect artifacts to ./artifacts
+        id: collect
         shell: bash
         run: |
           set -euo pipefail
@@ -101,20 +102,30 @@ jobs:
           else
             date_compact=$(date -u +%Y%m%d)
           fi
-          target="artifacts/OpenMowerOS_${date_compact}.zip"
-          # Copy (not move) from root-owned deploy dir to our writable workspace dir
-          cp -f "${latest_zip}" "${target}"
-          # Copy any .info files for reference
-          cp -f ext/pi-gen/deploy/*.info artifacts/ 2>/dev/null || true
-          ls -l artifacts
+          # Extract the raw .img from the pi-gen zip and re-zip only the .img as OpenMowerOS_YYYYMMDD.zip
+          tmpdir=$(mktemp -d)
+          img_in_zip=$(bsdtar -tf "${latest_zip}" | grep -E '\\.img$' | head -n1 || true)
+          if [[ -z "${img_in_zip}" ]]; then
+            echo "No .img found inside ${latest_zip}" >&2
+            exit 1
+          fi
+          bsdtar -xf "${latest_zip}" -C "${tmpdir}" "${img_in_zip}"
+          mv "${tmpdir}/${img_in_zip}" "${tmpdir}/OpenMowerOS_${date_compact}.img"
+          out_zip="artifacts/OpenMowerOS_${date_compact}.zip"
+          zip -9 -j "${out_zip}" "${tmpdir}/OpenMowerOS_${date_compact}.img"
+          # Clean up temp to save space
+          rm -rf "${tmpdir}"
+          ls -l artifacts || true
+          # Expose outputs for downstream steps
+          echo "date_compact=${date_compact}" >> "$GITHUB_OUTPUT"
+          echo "artifact_name=OpenMowerOS_${date_compact}" >> "$GITHUB_OUTPUT"
+          echo "zip_path=${out_zip}" >> "$GITHUB_OUTPUT"
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: openmoweros-pigen-build
-          path: |
-            artifacts/OpenMowerOS_*.zip
-            artifacts/*.info
+          name: ${{ steps.collect.outputs.artifact_name }}
+          path: ${{ steps.collect.outputs.zip_path }}
 
       - name: Publish release/prerelease
         if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/heads/main') || startsWith(github.ref, 'refs/tags/')
