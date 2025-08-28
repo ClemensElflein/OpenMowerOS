@@ -59,23 +59,11 @@ case "$cmd" in
         # Always apply key to the 'openmower' user, regardless of imager input
         if [[ ${1:-} == "-k" && -n ${2:-} ]]; then
             TARGET_USER="openmower"
-            TARGET_HOME=$(getent passwd "$TARGET_USER" | cut -d: -f6)
-            TARGET_HOME=${TARGET_HOME:-"/home/$TARGET_USER"}
-            id "$TARGET_USER" >/dev/null 2>&1 || useradd -m "$TARGET_USER" || true
+            TARGET_HOME="/home/$TARGET_USER"
             install -o "$TARGET_USER" -m 700 -d "$TARGET_HOME/.ssh"
             install -o "$TARGET_USER" -m 600 <(printf "%s\n" "$2") "$TARGET_HOME/.ssh/authorized_keys"
         fi
         systemctl enable ssh || true
-    ;;
-    
-    userconf)
-        # Args: username password_hash (ignored username); always set for 'openmower'
-        _U=${1:-}; P=${2:-}
-        if [[ -n "$P" ]]; then
-            TARGET_USER="openmower"
-            id "$TARGET_USER" >/dev/null 2>&1 || useradd -m "$TARGET_USER" || true
-            echo "$TARGET_USER:$P" | chpasswd -e || true
-        fi
     ;;
     
     *)
