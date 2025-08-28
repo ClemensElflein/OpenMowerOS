@@ -4,9 +4,6 @@
 
 STAGE_DIR="$(dirname "$0")"
 
-# Install all staged files preserving permissions
-rsync -aH "$STAGE_DIR/files/" "$ROOTFS_DIR/"
-
-# Ensure directories exist (rsync handles this, but be explicit for safety)
-install -d "$ROOTFS_DIR/etc/NetworkManager/conf.d" || true
-install -d "$ROOTFS_DIR/var/lib/NetworkManager" || true
+# Install files
+install -m 0644 -D "$STAGE_DIR/files/etc/NetworkManager/conf.d/10-comitup.conf" "$ROOTFS_DIR/etc/NetworkManager/conf.d/10-comitup.conf"
+install -m 0644 -D "$STAGE_DIR/files/etc/systemd/system/comitup-nm-wifi-ensure.service" "$ROOTFS_DIR/etc/systemd/system/comitup-nm-wifi-ensure.service"
