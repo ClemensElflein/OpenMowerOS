@@ -104,9 +104,11 @@ jobs:
           fi
           # Extract the raw .img from the pi-gen zip and re-zip only the .img as OpenMowerOS_YYYYMMDD.zip
           tmpdir=$(mktemp -d)
-          img_in_zip=$(bsdtar -tf "${latest_zip}" | grep -E '\\.img$' | head -n1 || true)
+          img_in_zip=$(bsdtar -tf "${latest_zip}" | grep -E '\.img$' | head -n1)
           if [[ -z "${img_in_zip}" ]]; then
             echo "No .img found inside ${latest_zip}" >&2
+            echo "Archive content was:" >&2
+            bsdtar -tf "${latest_zip}" >&2 || true
             exit 1
           fi
           bsdtar -xf "${latest_zip}" -C "${tmpdir}" "${img_in_zip}"
