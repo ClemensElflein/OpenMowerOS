@@ -22,8 +22,8 @@ if [ ! -f "${CONFIG_FILE}" ]; then
     exit 1
 fi
 
-# Always mount our custom stages into the container
-export PIGEN_DOCKER_OPTS="${PIGEN_DOCKER_OPTS:-} --volume ${ROOT_DIR}/custom-stages:/custom-stages:ro"
+# Always mount our stage-openmower into the container
+export PIGEN_DOCKER_OPTS="${PIGEN_DOCKER_OPTS:-} --volume ${ROOT_DIR}/stage-openmower:/stage-openmower:ro"
 
 # Optionally map loop devices explicitly into the container (helps on some hosts)
 if [ "${MAP_LOOP_DEVICES:-0}" = "1" ]; then
