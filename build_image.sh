@@ -6,7 +6,7 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PIGEN_DIR="${ROOT_DIR}/ext/pi-gen"
-CONFIG_FILE="${ROOT_DIR}/pi-gen-config/config"
+CONFIG_FILE="${ROOT_DIR}/pi-gen.config"
 
 # Ensure standard admin tools are in PATH for non-root users on Debian
 export PATH="/usr/sbin:/sbin:${PATH}"
