@@ -1,7 +1,8 @@
-# Install a few helpful packages (no recommends to keep image lean)
+# Install a few helpful packages
 libbash
 mc
 openocd
 wavemon
 aptitude
 socat
+bind9-host
