@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - 'main'
+      - 'v2-rework'
       - 'v2-pi-gen'
       - 'testing'
     tags:
@@ -102,32 +103,29 @@ jobs:
           else
             date_compact=$(date -u +%Y%m%d)
           fi
-          # Extract the raw .img from the pi-gen zip and re-zip only the .img as OpenMowerOS_YYYYMMDD.zip
-          tmpdir=$(mktemp -d)
+          # Create two artifacts: raw .img for GH artifact (GH auto-zips), and a .zip for releases
           img_in_zip=$(bsdtar -tf "${latest_zip}" | grep -E '\.img$' | head -n1)
           if [[ -z "${img_in_zip}" ]]; then
             echo "No .img found inside ${latest_zip}" >&2
             echo "Archive content was:" >&2
-            bsdtar -tf "${latest_zip}" >&2 || true
+            bsdtar -tf "${latest_zip}" >&2
             exit 1
           fi
-          bsdtar -xf "${latest_zip}" -C "${tmpdir}" "${img_in_zip}"
-          mv "${tmpdir}/${img_in_zip}" "${tmpdir}/OpenMowerOS_${date_compact}.img"
+          bsdtar -xf "${latest_zip}" -C artifacts "${img_in_zip}"
+          mv "artifacts/${img_in_zip}" "artifacts/OpenMowerOS_${date_compact}.img"
           out_zip="artifacts/OpenMowerOS_${date_compact}.zip"
-          zip -9 -j "${out_zip}" "${tmpdir}/OpenMowerOS_${date_compact}.img"
+          zip -9 -j "${out_zip}" "artifacts/OpenMowerOS_${date_compact}.img"
           # Clean up temp to save space
-          rm -rf "${tmpdir}"
-          ls -l artifacts || true
+          ls -l artifacts
           # Expose outputs for downstream steps
-          echo "date_compact=${date_compact}" >> "$GITHUB_OUTPUT"
           echo "artifact_name=OpenMowerOS_${date_compact}" >> "$GITHUB_OUTPUT"
-          echo "zip_path=${out_zip}" >> "$GITHUB_OUTPUT"
+          echo "img_path=artifacts/OpenMowerOS_${date_compact}.img" >> "$GITHUB_OUTPUT"
 
-      - name: Upload build artifacts
+      - name: Upload build artifacts (raw .img)
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.collect.outputs.artifact_name }}
-          path: ${{ steps.collect.outputs.zip_path }}
+          path: ${{ steps.collect.outputs.img_path }}
 
       - name: Publish release/prerelease
         if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/heads/main') || startsWith(github.ref, 'refs/tags/')
