@@ -8,7 +8,7 @@ if [ ! -f /usr/lib/bash/colors.sh ]; then
 fi
 source /usr/lib/bash/colors.sh
 
-# OM Config
+# OM Defaults (OM_VERSION, OM_REPO, ...)
 if [ ! -r /etc/default/openmower ]; then
     colorPrintN Red "Missing /etc/default/openmower defaults!"
     exit 2
@@ -29,21 +29,20 @@ usage() {
 Usage: openmower <command> [<args>]
 
 Commands:
-  help           Show this help
-  logs           Show service logs (systemd/journal). Pass -f to follow.
-  container-logs Show container logs (docker). Defaults to follow.
-  pull           Pull the configured container image (requires OM_VERSION)
-  restart        Restart the openmower systemd service
-  start          Start the openmower systemd service
-  status         Show the openmower systemd status
-  stop           Stop the openmower systemd service
-  shell|exec     Open an interactive shell inside the running container
+  help                   Show this help
+  logs                   Show service logs (systemd/journal). Pass -f to follow.
+  container-logs|clogs   Show container logs (docker). Defaults to follow.
+  pull                   Pull the configured container image (requires OM_VERSION)
+  restart                Restart the openmower systemd service
+  start                  Start the openmower systemd service
+  status                 Show the openmower systemd status
+  stop                   Stop the openmower systemd service
+  shell|exec             Open an interactive shell inside the running container
 
 USAGE
 }
 
 cmd_pull() {
-    ensure_version_set
     local image
     image="${OM_IMAGE:-${OM_REPO}:${OM_VERSION}}"
     colorPrintN Yellow "Pulling ${image} ..."
@@ -100,7 +99,7 @@ main() {
         restart) shift || true; cmd_restart "$@" ;;
         status) shift || true; cmd_status "$@" ;;
         logs) shift || true; cmd_logs "$@" ;;
-        container-logs|container_logs|docker-logs) shift || true; cmd_container_logs "$@" ;;
+        container-logs|clogs|docker-logs|dlogs) shift || true; cmd_container_logs "$@" ;;
         shell|exec) shift || true; cmd_shell "$@" ;;
         help|--help|-h|"") usage ;;
         *)

@@ -3,44 +3,42 @@ set -euo pipefail
 
 # Service wrapper (not user-facing): prepares env and runs the container attached
 
-# libbash (colors). Ensure TERM is set under systemd and prefer colorPrintN.
-if [ -f /usr/lib/bash/colors.sh ]; then
-    source /usr/lib/bash/colors.sh || true
+# OM Defaults (OM_VERSION, OM_REPO, ...)
+if [ ! -r /etc/default/openmower ]; then
+    /usr/bin/logger -p user.err -t openmower-service "Missing /etc/default/openmower defaults!"
+    exit 2
 fi
+source /etc/default/openmower
 
-# Defaults (service-level)
-if [ -r /etc/default/openmower ]; then
-    . /etc/default/openmower
-fi
 
-OM_DEBUG=${OM_DEBUG:-true}
-OM_AUTOPULL=${OM_AUTOPULL:-true}
+OM_DEBUG="${OM_DEBUG:-true}"
+OM_CONTAINER="${OM_CONTAINER:-openmower}"
 
-# Avoid "tput: No value for $TERM" when running under systemd
-if [ -z "${TERM:-}" ]; then
-    export TERM=ansi
-fi
-
-# If OM_VERSION is still the placeholder from /etc/default/openmower, quit early with a clear message
-if [ "${OM_VERSION:-}" = "choose-your-version" ]; then
-    MSG1="OM_VERSION is still set to 'choose-your-version'."
-    MSG2="Please edit /etc/default/openmower and set OM_VERSION to one of the documented values, then restart the service via (sudo systemctl restart openmower)."
-    # Print to stdout (captured by systemd journal) and also log explicitly
-    #colorPrintN Red "$MSG1"
-    #colorPrintN Yellow "$MSG2"
-    /usr/bin/logger -p user.err -t openmower-service "$MSG1" || true
-    /usr/bin/logger -p user.notice -t openmower-service "$MSG2" || true
+# If OM_VERSION is not set or is still the placeholder from /etc/default/openmower, quit early with a clear message
+if [ -z "${OM_VERSION}" ] || [ "${OM_VERSION}" = "choose-your-version" ]; then
+    /usr/bin/logger -p user.err -t openmower-service "OM_VERSION is still set to 'choose-your-version'." || true
+    /usr/bin/logger -p user.notice -t openmower-service "Please edit /etc/default/openmower and set OM_VERSION to one of the documented values, then restart the service via (sudo systemctl restart openmower)." || true
     # Exit with special code so systemd won't restart the unit in a loop
     exit 77
 fi
 
 OM_IMAGE=${OM_IMAGE:-${OM_REPO}:${OM_VERSION}}
 
+# Preflight: required bind-mounts
+CONFIG_SRC="/home/openmower/mower_config.sh"
+if [ ! -r "$CONFIG_SRC" ]; then
+    /usr/bin/logger -p user.err -t openmower-service "Missing required config file: $CONFIG_SRC"
+    /usr/bin/logger -p user.notice -t openmower-service "Create it (e.g., copy from a template) and retry: openmower restart"
+    exit 77
+fi
+
+# ROS home
+ROS_HOME_DIR="/home/openmower/ros_home"
+mkdir -p "$ROS_HOME_DIR" 2>/dev/null || true
+
 # Check if OM_IMAGE is already available locally
 if ! /usr/bin/docker image inspect "$OM_IMAGE" >/dev/null 2>&1; then
-    MSG="'OM_IMAGE' is not yet available locally. Please pull the image by running `openmower-pull.sh`, then restart the service via `sudo systemctl restart openmower`."
-    echo -e "$MSG"
-    /usr/bin/logger -t openmower-service "$MSG" || true
+    /usr/bin/logger -t openmower-service "'OM_IMAGE' is not yet available locally. Please pull the image by running `openmower-pull.sh`, then restart the service via `sudo systemctl restart openmower`." || true
     exit 77
 fi
 
@@ -52,13 +50,12 @@ fi
 # Build run args
 RUN_ARGS=(
     --name openmower
-    --detach=false
     --tty
     --privileged
     --network=host
     --volume /dev:/dev
-    --volume /home/openmower/mower_config.sh:/config/mower_config.sh:ro
-    --volume /home/openmower/ros_home:/root
+    --volume "$CONFIG_SRC":/config/mower_config.sh:ro
+    --volume "$ROS_HOME_DIR":/root
 )
 
 # Optional ROS logging config if present
