@@ -14,8 +14,8 @@ RestartPreventExitStatus=77
 TimeoutStartSec=1h
 TimeoutStopSec=120s
 ExecStart=/usr/local/sbin/openmower-service.sh
-ExecStop=/usr/bin/docker stop -t 10 openmower
-ExecStopPost=/usr/bin/docker rm -f openmower
+ExecStop=/usr/bin/docker ps -q --filter "name=openmower" | xargs -r /usr/bin/docker stop
+ExecStopPost=/usr/bin/docker ps -q --filter "name=openmower" | xargs -r /usr/bin/docker rm -f
 
 [Install]
 WantedBy=multi-user.target

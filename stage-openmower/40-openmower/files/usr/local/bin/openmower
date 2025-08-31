@@ -1,0 +1,92 @@
+#!/bin/bash
+set -euo pipefail
+
+# Optional colors/messages from libbash
+if [ -f /usr/lib/bash/colors.sh ]; then
+    # shellcheck disable=SC1091
+    source /usr/lib/bash/colors.sh
+fi
+
+# Minimal fallbacks if libbash is unavailable
+if ! command -v colorPrintN >/dev/null 2>&1; then
+    colorPrintN() { echo "$*"; }
+fi
+if ! command -v colorPrint >/dev/null 2>&1; then
+    colorPrint() { echo "$*"; }
+fi
+
+# Config
+if [ -r /etc/default/openmower ]; then
+    # shellcheck disable=SC1091
+    source /etc/default/openmower
+fi
+
+OM_VERSION="${OM_VERSION:-}"
+OM_REPO="${OM_REPO:-ghcr.io/clemenselflein/open_mower_ros}"
+
+usage() {
+  cat <<USAGE
+Usage: openmower <command>
+
+Commands:
+  pull           Pull the configured container image (requires OM_VERSION)
+  start          Start the openmower systemd service
+  stop           Stop the openmower systemd service
+  restart        Restart the openmower systemd service
+  status         Show service status
+  logs           Tail recent service logs
+  help           Show this help
+
+Environment/config:
+  - /etc/default/openmower should define OM_VERSION and optionally OM_REPO
+USAGE
+}
+
+ensure_version_set() {
+    if [ -z "${OM_VERSION}" ] || [ "${OM_VERSION}" = "choose-your-version" ]; then
+        colorPrintN Red "OM_VERSION is not set or still 'choose-your-version'."
+        colorPrintN Yellow "Edit /etc/default/openmower and set OM_VERSION to a documented value, then run: openmower pull"
+        exit 77
+    fi
+}
+
+cmd_pull() {
+    ensure_version_set
+    local image
+    image="${OM_IMAGE:-${OM_REPO}:${OM_VERSION}}"
+    colorPrintN Yellow "Pulling ${image} ..."
+    exec /usr/bin/docker pull "${image}"
+}
+
+cmd_start() { systemctl start openmower.service; }
+cmd_stop() { systemctl stop openmower.service; }
+cmd_restart() { systemctl restart openmower.service; }
+cmd_status() { systemctl status --no-pager openmower.service; }
+cmd_logs() { journalctl -u openmower.service -n 200 --no-pager; }
+
+main() {
+    local cmd="${1:-}"
+    # Back-compat: if invoked as openmower-pull.sh with no args, default to pull
+    if [ -z "${cmd}" ]; then
+        case "$(basename "$0")" in
+            openmower-pull.sh) cmd="pull" ;;
+        esac
+    fi
+    
+    case "${cmd}" in
+        pull) shift || true; cmd_pull "$@" ;;
+        start) shift || true; cmd_start "$@" ;;
+        stop) shift || true; cmd_stop "$@" ;;
+        restart) shift || true; cmd_restart "$@" ;;
+        status) shift || true; cmd_status "$@" ;;
+        logs) shift || true; cmd_logs "$@" ;;
+        help|--help|-h|"") usage ;;
+        *)
+            colorPrintN Red "Unknown command: ${cmd}"
+            usage
+            exit 2
+        ;;
+    esac
+}
+
+main "$@"

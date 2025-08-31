@@ -26,8 +26,8 @@ if [ "${OM_VERSION:-}" = "choose-your-version" ]; then
     MSG1="OM_VERSION is still set to 'choose-your-version'."
     MSG2="Please edit /etc/default/openmower and set OM_VERSION to one of the documented values, then restart the service via (sudo systemctl restart openmower)."
     # Print to stdout (captured by systemd journal) and also log explicitly
-    colorPrintN_safe Red "$MSG1"
-    colorPrintN_safe Yellow "$MSG2"
+    #colorPrintN Red "$MSG1"
+    #colorPrintN Yellow "$MSG2"
     /usr/bin/logger -p user.err -t openmower-service "$MSG1" || true
     /usr/bin/logger -p user.notice -t openmower-service "$MSG2" || true
     # Exit with special code so systemd won't restart the unit in a loop

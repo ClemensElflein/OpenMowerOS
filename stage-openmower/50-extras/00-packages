@@ -1,5 +1,4 @@
 # Install a few helpful packages
-libbash
 mc
 openocd
 wavemon
