@@ -3,7 +3,7 @@ name: Build OpenMowerOS (pi-gen)
 on:
   workflow_dispatch:
   push:
-    branches:
+    branches-ignore:
       - 'main'
     tags:
       - 'v*.*.*'
@@ -29,6 +29,8 @@ concurrency:
 
 jobs:
   build:
+  # Run for push (dev branches) or for PRs from forks; avoid duplicate runs for internal PRs
+    if: ${{ github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository) }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository (with submodules)
