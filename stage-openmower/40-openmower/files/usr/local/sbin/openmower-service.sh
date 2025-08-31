@@ -55,7 +55,7 @@ RUN_ARGS=(
     --network=host
     --volume /dev:/dev
     --volume "$CONFIG_SRC":/config/mower_config.sh:ro
-    --volume "$ROS_HOME_DIR":/root
+    --volume /home/openmower:/root
 )
 
 # Optional ROS logging config if present
