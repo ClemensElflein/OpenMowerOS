@@ -7,11 +7,11 @@ iface lo inet loopback
 #   Remember CM4's LAN interface has always a carrier because it's wired with
 #   xCore's switch and not the LAN plug on the carrier board.
 
-# Home Ethernet via DHCP
 auto eth0
-iface eth0 inet dhcp
 
-# Static internal Robot Ethernet
-auto eth0:0
-iface eth0:0 inet static
+# Static internal robot ethernet
+iface eth0 inet static
     address 172.16.78.1/24
+
+# Home ethernet via DHCP
+iface eth0 inet dhcp
