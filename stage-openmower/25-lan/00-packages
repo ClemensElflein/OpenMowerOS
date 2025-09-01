@@ -1,2 +1,2 @@
-# DHCP/DNS for the robot network
+ifupdown
 dnsmasq
