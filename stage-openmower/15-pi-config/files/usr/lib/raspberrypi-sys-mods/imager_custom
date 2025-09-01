@@ -1,13 +1,13 @@
 #!/bin/bash
 # Raspberry Pi Imager custom actions hook (adapted for NetworkManager)
 # This script is called by /boot/firstrun.sh on initial first run of the image.
-#set -euo pipefail
+set -euo pipefail
 
 # Debugging
-set -Eeuo pipefail
-exec > /boot/imager_custom.log 2>&1
-trap 'echo "ERROR at line $LINENO"; exit 1' ERR
-set -x
+#set -Eeuo pipefail
+#exec > /boot/imager_custom.log 2>&1
+#trap 'echo "ERROR at line $LINENO"; exit 1' ERR
+#set -x
 
 cmd=${1:-}
 shift || true
@@ -25,15 +25,11 @@ case "$cmd" in
             rfkill unblock wifi || true
             iw reg set "$COUNTRY" || true
         fi
-        # Create/replace NM profile named like the SSID
+        # Create NM profile named like the SSID
         systemctl start NetworkManager.service || true
-        #if nmcli -t -f NAME con show | grep -Fxq -- "$SSID"; then
-        #    nmcli con delete "$SSID" || true
-        #fi
         nmcli con add type wifi ifname "" con-name "$SSID" ssid "$SSID"
         nmcli con modify "$SSID" wifi-sec.key-mgmt wpa-psk wifi-sec.psk "$PSK"
         nmcli con modify "$SSID" connection.autoconnect yes
-        #nmcli con up "$SSID" || true
     ;;
     
     set_hostname)
@@ -76,7 +72,5 @@ case "$cmd" in
         # Unknown or no-op; exit gracefully
     ;;
 esac
-
-/usr/bin/sync || true
 
 exit 0
