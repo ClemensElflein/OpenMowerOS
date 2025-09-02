@@ -46,6 +46,7 @@ case "$cmd" in
         if [[ -n "$LAYOUT" ]]; then
             sed -i "s/^XKBLAYOUT=.*/XKBLAYOUT=\"$LAYOUT\"/" /etc/default/keyboard || true
         fi
+        /usr/bin/setupcon -k || true
     ;;
     
     set_timezone)
