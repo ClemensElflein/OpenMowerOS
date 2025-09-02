@@ -1,2 +1,3 @@
 ifupdown
 dnsmasq
+resolvconf
