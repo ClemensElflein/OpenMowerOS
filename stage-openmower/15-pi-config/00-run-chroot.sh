@@ -78,7 +78,7 @@ dtoverlay=uart5
 
 # CM4/5 antenna selection — choose Wi‑Fi antenna path
 # Internal/on‑module antenna (default):
-# dtparam=ant1
+dtparam=ant1
 # External- U.FL/IPEX antenna connector:
 # dtparam=ant2
 EOF
@@ -87,5 +87,9 @@ EOF
 # Handle both possible locations across releases
 add_examples /boot/firmware/config.txt || true
 add_examples /boot/config.txt || true
+
+# Setup console keyboard layout
+/usr/bin/setupcon -k || true
+update-initramfs -u || true
 
 exit 0

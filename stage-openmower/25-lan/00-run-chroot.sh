@@ -22,4 +22,4 @@ nohook resolv.conf
 option domain_name_servers domain_name domain_search
 EOF
 
-ln -sf /var/run/resolvconf/resolv.conf /etc/resolv.conf
+ln -sf /run/resolvconf/resolv.conf /etc/resolv.conf

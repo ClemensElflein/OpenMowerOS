@@ -45,8 +45,9 @@ case "$cmd" in
         LAYOUT=${1:-}
         if [[ -n "$LAYOUT" ]]; then
             sed -i "s/^XKBLAYOUT=.*/XKBLAYOUT=\"$LAYOUT\"/" /etc/default/keyboard || true
+            dpkg-reconfigure -f noninteractive keyboard-configuration || true
+            setupcon -k || true
         fi
-        /usr/bin/setupcon -k || true
     ;;
     
     set_timezone)
