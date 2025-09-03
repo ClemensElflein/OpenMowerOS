@@ -88,8 +88,4 @@ EOF
 add_examples /boot/firmware/config.txt || true
 add_examples /boot/config.txt || true
 
-# Setup console keyboard layout
-/usr/bin/setupcon -k || true
-update-initramfs -u || true
-
 exit 0

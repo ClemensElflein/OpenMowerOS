@@ -3,7 +3,7 @@
 export DEBIAN_FRONTEND=noninteractive
 apt-get update
 
-# Install Docker engine from Debian (Trixie)
+# Install Docker engine from Debian
 apt-get install -y --no-install-recommends docker.io docker-cli
 
 # Enable the Docker daemon
