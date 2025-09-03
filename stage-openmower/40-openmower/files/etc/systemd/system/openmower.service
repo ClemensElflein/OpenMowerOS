@@ -1,21 +1,18 @@
 [Unit]
-Description=OpenMower (Docker)
-Wants=network-online.target
-After=docker.service network-online.target NetworkManager.service
+Description=OpenMower Stack (docker compose)
+Wants=docker.service
+After=docker.service network-online.target dockge.service
 
 [Service]
-Type=simple
-User=openmower
-Group=openmower
-SupplementaryGroups=docker
-Restart=always
-RestartSec=15s
-RestartPreventExitStatus=77
-TimeoutStartSec=1h
-TimeoutStopSec=120s
-ExecStart=/usr/local/sbin/openmower-service.sh
-ExecStop=-/usr/bin/docker stop openmower
-ExecStopPost=-/usr/bin/docker rm -f openmower
+Type=oneshot
+RemainAfterExit=yes
+TimeoutStartSec=30min
+EnvironmentFile=/etc/default/openmower
+WorkingDirectory=/opt/stacks/openmower
+ExecCondition=/bin/sh -c '[ -f compose.yaml ]'
+ExecStartPre=/bin/sh -c 'FILES=(-f compose.yaml); case "$OM_DEBUG" in [Tt][Rr][Uu][Ee]|1|[Yy][Ee][Ss]) [ -f compose.debug.yaml ] && FILES+=( -f compose.debug.yaml ); export OM_IMAGE="${OM_IMAGE:-${OM_REPO}:${OM_VERSION}}"; exec /usr/bin/docker compose "${FILES[@]}" pull --quiet || true'
+ExecStart=/bin/sh -c 'FILES=(-f compose.yaml); case "$OM_DEBUG" in [Tt][Rr][Uu][Ee]|1|[Yy][Ee][Ss]) [ -f compose.debug.yaml ] && FILES+=( -f compose.debug.yaml ); export OM_IMAGE="${OM_IMAGE:-${OM_REPO}:${OM_VERSION}}"; exec /usr/bin/docker compose "${FILES[@]}" up -d'
+ExecStop=/bin/sh -c 'FILES=(-f compose.yaml); case "$OM_DEBUG" in [Tt][Rr][Uu][Ee]|1|[Yy][Ee][Ss]) [ -f compose.debug.yaml ] && FILES+=( -f compose.debug.yaml ); export OM_IMAGE="${OM_IMAGE:-${OM_REPO}:${OM_VERSION}}"; exec /usr/bin/docker compose "${FILES[@]}" down'
 
 [Install]
 WantedBy=multi-user.target

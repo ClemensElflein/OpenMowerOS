@@ -24,68 +24,133 @@ fi
 OM_REPO="${OM_REPO:-ghcr.io/clemenselflein/open_mower_ros}"
 OM_CONTAINER="${OM_CONTAINER:-openmower}"
 
+# Compose detection (stack managed under /opt/stacks/openmower)
+OM_STACK_DIR="${OM_STACK_DIR:-/opt/stacks/openmower}"
+COMPOSE_FILE=""
+if [ -d "$OM_STACK_DIR" ]; then
+    if [ -f "$OM_STACK_DIR/compose.yaml" ]; then
+        COMPOSE_FILE="$OM_STACK_DIR/compose.yaml"
+        elif [ -f "$OM_STACK_DIR/docker-compose.yml" ]; then
+        COMPOSE_FILE="$OM_STACK_DIR/docker-compose.yml"
+    fi
+fi
+COMPOSE_MODE=0
+[ -n "$COMPOSE_FILE" ] && COMPOSE_MODE=1
+
+# Build compose -f options, including debug override when requested and present
+compose_files_opts() {
+    local opts=( -f "$COMPOSE_FILE" )
+    case "$OM_DEBUG" in
+        [Tt][Rr][Uu][Ee]|1|[Yy][Ee][Ss])
+            if [ -f "$OM_STACK_DIR/compose.debug.yaml" ]; then
+                opts+=( -f "$OM_STACK_DIR/compose.debug.yaml" )
+            fi
+        ;;
+    esac
+    printf '%s\n' "${opts[@]}"
+}
+
 usage() {
   cat <<USAGE
 Usage: openmower <command> [<args>]
 
 Commands:
   help                   Show this help
-  logs                   Show service logs (systemd/journal). Pass -f to follow.
-  container-logs|clogs   Show container logs (docker). Defaults to follow.
-  pull                   Pull the configured container image (requires OM_VERSION)
-  restart                Restart the openmower systemd service
-  start                  Start the openmower systemd service
-  status                 Show the openmower systemd status
-  stop                   Stop the openmower systemd service
-  shell|exec             Open an interactive shell inside the running container
+    logs                   Show service logs (systemd/journal). Pass -f to follow.
+    container-logs|clogs   Show container logs (docker or compose). Defaults to follow.
+    pull                   Pull container image(s). Uses compose when a stack exists.
+    restart                Restart the OpenMower unit
+    start                  Start the OpenMower unit
+    status                 Show the OpenMower unit status
+    stop                   Stop the OpenMower unit
+    shell|exec             Open a shell inside the running container
 
 USAGE
 }
 
 cmd_pull() {
-    local image
-    image="${OM_IMAGE:-${OM_REPO}:${OM_VERSION}}"
-    colorPrintN Yellow "Pulling ${image} ..."
-    exec /usr/bin/docker pull "${image}"
+    if [ $COMPOSE_MODE -eq 1 ]; then
+        colorPrintN Yellow "Pulling compose stack images from $COMPOSE_FILE ..."
+        # Pass OM_IMAGE to match systemd unit behavior
+        export OM_IMAGE="${OM_IMAGE:-${OM_REPO}:${OM_VERSION}}"
+        # Gather -f options (include debug override when OM_DEBUG is true)
+        mapfile -t files < <(compose_files_opts)
+        exec /usr/bin/docker compose "${files[@]}" pull
+    else
+        local image
+        image="${OM_IMAGE:-${OM_REPO}:${OM_VERSION}}"
+        colorPrintN Yellow "Pulling ${image} ..."
+        exec /usr/bin/docker pull "${image}"
+    fi
 }
 
-cmd_start() { systemctl start openmower.service; }
-cmd_stop() { systemctl stop openmower.service; }
-cmd_restart() { systemctl restart openmower.service; }
-cmd_status() { systemctl status --no-pager openmower.service; }
+_unit_name() {
+    echo "openmower.service"
+}
+
+cmd_start() { systemctl start "$(_unit_name)"; }
+cmd_stop() { systemctl stop "$(_unit_name)"; }
+cmd_restart() { systemctl restart "$(_unit_name)"; }
+cmd_status() { systemctl status --no-pager "$(_unit_name)"; }
 
 # Service logs (journal). If no args, show last 200 lines; otherwise pass through.
 cmd_logs() {
+    local unit
+    unit="$(_unit_name)"
     if [ "$#" -eq 0 ]; then
-        journalctl -u openmower.service -n 200 --no-pager
+        journalctl -u "$unit" -n 200 --no-pager
     else
-        journalctl -u openmower.service --no-pager "$@"
+        journalctl -u "$unit" --no-pager "$@"
     fi
 }
 
 # Container logs (docker). By default follow and show last 100 lines.
 cmd_container_logs() {
     local default=( -f --tail 100 )
-    if [ "$#" -eq 0 ]; then
-        /usr/bin/docker logs "${default[@]}" "${OM_CONTAINER}"
+    if [ $COMPOSE_MODE -eq 1 ]; then
+        if [ "$#" -eq 0 ]; then
+            mapfile -t files < <(compose_files_opts)
+            /usr/bin/docker compose "${files[@]}" logs -f --tail 100
+        else
+            mapfile -t files < <(compose_files_opts)
+            /usr/bin/docker compose "${files[@]}" logs "$@"
+        fi
     else
-        /usr/bin/docker logs "$@" "${OM_CONTAINER}"
+        if [ "$#" -eq 0 ]; then
+            /usr/bin/docker logs "${default[@]}" "${OM_CONTAINER}"
+        else
+            /usr/bin/docker logs "$@" "${OM_CONTAINER}"
+        fi
     fi
 }
 
 # Open an interactive shell inside the running container
 cmd_shell() {
     # If a command is provided, execute it; otherwise open bash
-    if /usr/bin/docker ps --format '{{.Names}}' | grep -qx "${OM_CONTAINER}"; then
+    if [ $COMPOSE_MODE -eq 1 ]; then
+        # Assume service name 'openmower' in the stack; if a different name is used, pass it as first arg
+        local svc="openmower"
+        if [ "$#" -gt 0 ] && ! [[ "$1" =~ ^- ]]; then
+            svc="$1"; shift
+        fi
+        mapfile -t files < <(compose_files_opts)
         if [ "$#" -gt 0 ]; then
-            exec /usr/bin/docker exec -it "${OM_CONTAINER}" "$@"
+            exec /usr/bin/docker compose "${files[@]}" exec "$svc" "$@"
         else
-            exec /usr/bin/docker exec -it "${OM_CONTAINER}" /bin/bash -l
+            exec /usr/bin/docker compose "${files[@]}" exec "$svc" /bin/bash -l
         fi
     else
-        colorPrintN Red "Container '${OM_CONTAINER}' is not running."
-        colorPrintN Yellow "Start it with: systemctl start openmower.service"
-        exit 3
+        if /usr/bin/docker ps --format '{{.Names}}' | grep -qx "${OM_CONTAINER}"; then
+            if [ "$#" -gt 0 ]; then
+                exec /usr/bin/docker exec -it "${OM_CONTAINER}" "$@"
+            else
+                exec /usr/bin/docker exec -it "${OM_CONTAINER}" /bin/bash -l
+            fi
+        else
+            colorPrintN Red "Container '${OM_CONTAINER}' is not running."
+            colorPrintN Yellow "Start it with: systemctl start openmower.service"
+            exit 3
+        fi
     fi
 }
 

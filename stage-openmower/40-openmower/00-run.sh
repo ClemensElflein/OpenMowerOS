@@ -10,3 +10,6 @@ install -m 0664 -D "$STAGE_DIR/files/etc/default/openmower" "$ROOTFS_DIR/etc/def
 install -m 0775 -D "$STAGE_DIR/files/usr/local/sbin/openmower-service.sh" "$ROOTFS_DIR/usr/local/sbin/openmower-service.sh"
 install -m 0775 -D "$STAGE_DIR/files/usr/local/bin/openmower" "$ROOTFS_DIR/usr/local/bin/openmower"
 install -m 0664 -D "$STAGE_DIR/files/home/openmower/mower_params.yaml" "$ROOTFS_DIR/home/openmower/mower_params.yaml"
+install -m 0755 -d "$ROOTFS_DIR/opt/stacks/openmower"
+install -m 0664 -D "$STAGE_DIR/files/opt/stacks/openmower/compose.yaml" "$ROOTFS_DIR/opt/stacks/openmower/compose.yaml"
+install -m 0664 -D "$STAGE_DIR/files/opt/stacks/openmower/compose.debug.yaml" "$ROOTFS_DIR/opt/stacks/openmower/compose.debug.yaml"

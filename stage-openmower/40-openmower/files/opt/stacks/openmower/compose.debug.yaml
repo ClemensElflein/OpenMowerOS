@@ -1,0 +1,12 @@
+version: "3.9"
+
+# Compose stack for OpenMower.
+# The image tag is controlled via /etc/default/openmower by OM_VERSION (and optionally OM_IMAGE).
+
+services:
+  openmower:
+    environment:
+      ROSOUT_DISABLE_FILE_LOGGING: "False"
+    volumes:
+      - /root/rosconsole.config:/config/rosconsole.config
+    command: ["/bin/bash", "-lc", "echo 'Debug profile active'; exec /ros_entrypoint.sh"]
