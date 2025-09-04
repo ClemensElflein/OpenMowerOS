@@ -5,11 +5,12 @@
 STAGE_DIR="$(dirname "$0")"
 
 # Install files
-install -m 0664 -D "$STAGE_DIR/files/etc/systemd/system/openmower.service" "$ROOTFS_DIR/etc/systemd/system/openmower.service"
-install -m 0664 -D "$STAGE_DIR/files/etc/default/openmower" "$ROOTFS_DIR/etc/default/openmower"
-install -m 0775 -D "$STAGE_DIR/files/usr/local/sbin/openmower-service.sh" "$ROOTFS_DIR/usr/local/sbin/openmower-service.sh"
 install -m 0775 -D "$STAGE_DIR/files/usr/local/bin/openmower" "$ROOTFS_DIR/usr/local/bin/openmower"
 install -m 0664 -D "$STAGE_DIR/files/home/openmower/mower_params.yaml" "$ROOTFS_DIR/home/openmower/mower_params.yaml"
 install -m 0755 -d "$ROOTFS_DIR/opt/stacks/openmower"
 install -m 0664 -D "$STAGE_DIR/files/opt/stacks/openmower/compose.yaml" "$ROOTFS_DIR/opt/stacks/openmower/compose.yaml"
-install -m 0664 -D "$STAGE_DIR/files/opt/stacks/openmower/compose.debug.yaml" "$ROOTFS_DIR/opt/stacks/openmower/compose.debug.yaml"
+install -m 0644 -D "$STAGE_DIR/files/opt/stacks/openmower/.env" "$ROOTFS_DIR/opt/stacks/openmower/.env"
+install -m 0755 -d "$ROOTFS_DIR/opt/stacks/openmower/nginx/conf.d"
+install -m 0644 -D "$STAGE_DIR/files/opt/stacks/openmower/nginx/conf.d/default.conf" "$ROOTFS_DIR/opt/stacks/openmower/nginx/conf.d/default.conf"
+install -m 0755 -d "$ROOTFS_DIR/opt/stacks/openmower/mosquitto"
+install -m 0644 -D "$STAGE_DIR/files/opt/stacks/openmower/mosquitto/mosquitto.conf" "$ROOTFS_DIR/opt/stacks/openmower/mosquitto/mosquitto.conf"

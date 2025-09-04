@@ -1,19 +1,58 @@
 version: "3.9"
 
-# Compose stack for OpenMower.
-# The image tag is controlled via /etc/default/openmower by OM_VERSION (and optionally OM_IMAGE).
-
 services:
   openmower:
-    image: ${OM_IMAGE}
+    image: "${REPO:-ghcr.io/clemenselflein/open_mower_ros}:${VERSION:-latest}-osv2"
     container_name: openmower
-    tty: true
     privileged: true
-    network_mode: host
     restart: unless-stopped
+    network_mode: host
+    # tty: true
     volumes:
       - /dev:/dev
-      - /home/openmower/mower_config.sh:/config/mower_config.sh:ro
       - /home/openmower:/root
+      # - /home/openmower/mower_params.yaml:/config/mower_params.yaml
+      # - /home/openmower/mower_config.sh:/config/mower_config.sh:ro
+      - type: volume
+        source: openmower_web
+        target: /opt/open_mower_ros/web
     environment:
-      ROSOUT_DISABLE_FILE_LOGGING: "True"
+      DEBUG: $DEBUG
+      OM_V2: $V2
+      OM_MOWER: $MOWER
+  
+  # MQTT broker for OpenMower
+  mosquitto:
+    image: eclipse-mosquitto:2
+    container_name: mosquitto
+    restart: unless-stopped
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      - mosquitto_data:/mosquitto/data
+      - mosquitto_log:/mosquitto/log
+
+  # Nginx to serve the OpenMower web assets
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+      - "80:80"
+    depends_on:
+      - openmower
+    volumes:
+      - type: volume
+        source: openmower_web
+        target: /usr/share/nginx/html
+        read_only: true
+        volume:
+          nocopy: true
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+
+volumes:
+  openmower_web: {}
+  mosquitto_data: {}
+  mosquitto_log: {}

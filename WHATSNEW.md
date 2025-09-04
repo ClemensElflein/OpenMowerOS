@@ -13,7 +13,6 @@ Also, it's "ON" by default now, so that newbies may recognize failures quicker.
 - Straightforward image updates: if the Docker image is missing or outdated, run `openmower-pull.sh` and afterwards `sudo systemctl restart openmower`.
 - TODO: All misc openmower scripts get placed now into PATH (/usr/local/bin)
 - TODO: Common `openmower.sh` script for which will list/wrap all sub-scripts like docker shell, ...
-- V1 mower_config has moved to `/home/openmower/mower_config.sh`.
 - V2 mower config is in `/home/openmower/mower_params.yaml`
 
 ## Under the hood (for the curious)

@@ -66,8 +66,6 @@ If you didn't entered your Wi-Fi Credentials when asked for the custom settings 
 
 5. Pull the selected `OM_VERSION` by running `openmower-pull.sh`.
 
-6. Edit `nano ~/mower_config.sh` file, read carefully and modify to your needs.
-
 7. TODO: Restart openmower service via `systemctl restart openmower`
 
 8. TODO: Check if everything runs fine by accessing the logs `docker logs -f openmower`
