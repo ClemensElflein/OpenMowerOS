@@ -2,26 +2,19 @@ name: Build OpenMowerOS (pi-gen)
 
 on:
   workflow_dispatch:
-    inputs:
-      clean_build:
-        description: 'Clean build without cache'
-        default: false
-        type: boolean
   push:
     branches:
-      - 'main'
-      - 'releases/**'
-      - 'v2'
+      - main
     tags:
-      - 'v*'
+      - v*.*.*
     paths:
-      - 'build_image.sh'
-      - 'pi-gen.config'
-      - 'stage-openmower/**'
-      - '.github/workflows/build.yaml'
+      - build_image.sh
+      - pi-gen.config
+      - stage-openmower/**
+      - .github/workflows/build.yaml
   pull_request:
     branches:
-      - 'main'
+      - main
 
 # Allow stopping obsolete workflows
 concurrency:
@@ -33,8 +26,6 @@ permissions:
 
 jobs:
   build:
-  # Run for push (dev branches) or for PRs from forks; avoid duplicate runs for internal PRs
-    if: ${{ github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository) }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository (with submodules)
