@@ -1,24 +1,23 @@
-version: "3.9"
-
 services:
   openmower:
-    image: "${REPO:-ghcr.io/clemenselflein/open_mower_ros}:${VERSION:-latest}-osv2"
+    # OpenMowerOSv2 needs an image with `-osv2` suffix
+    image: "${REPO}:${VERSION}-osv2"
     container_name: openmower
     privileged: true
     restart: unless-stopped
     network_mode: host
-    # tty: true
+    depends_on:
+      - mosquitto
     volumes:
       - /dev:/dev
       - /home/openmower:/root
-      # - /home/openmower/mower_params.yaml:/config/mower_params.yaml
-      # - /home/openmower/mower_config.sh:/config/mower_config.sh:ro
+      - /home/openmower/mower_params.yaml:/config/mower_params.yaml
       - type: volume
         source: openmower_web
         target: /opt/open_mower_ros/web
     environment:
       DEBUG: $DEBUG
-      OM_V2: $V2
+      OM_V2: $V2_HARDWARE
       OM_MOWER: $MOWER
   
   # MQTT broker for OpenMower
@@ -28,10 +27,9 @@ services:
     restart: unless-stopped
     ports:
       - "1883:1883"
+      - "9001:9001"
     volumes:
-      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
-      - mosquitto_data:/mosquitto/data
-      - mosquitto_log:/mosquitto/log
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
 
   # Nginx to serve the OpenMower web assets
   nginx:
@@ -50,9 +48,16 @@ services:
         read_only: true
         volume:
           nocopy: true
-      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - type: bind
+        source: ./nginx.conf
+        target: /etc/nginx/conf.d/default.conf
+        read_only: true
 
 volumes:
   openmower_web: {}
-  mosquitto_data: {}
-  mosquitto_log: {}
+
+# Dockge-specific extras shown in the UI
+x-dockge:
+  urls:
+  - http://${HOSTNAME}:8080
+  - ws://${HOSTNAME}:9001
