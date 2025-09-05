@@ -5,3 +5,4 @@ wavemon
 aptitude
 socat
 bind9-host
+bind9-dnsutils
