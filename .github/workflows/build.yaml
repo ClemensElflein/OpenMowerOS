@@ -2,30 +2,34 @@ name: Build OpenMowerOS (pi-gen)
 
 on:
   workflow_dispatch:
+    inputs:
+      clean_build:
+        description: 'Clean build without cache'
+        default: false
+        type: boolean
   push:
-    branches-ignore:
+    branches:
       - 'main'
+      - 'releases/**'
+      - 'v2'
     tags:
-      - 'v*.*.*'
+      - 'v*'
     paths:
       - 'build_image.sh'
       - 'pi-gen.config'
       - 'stage-openmower/**'
       - '.github/workflows/build.yaml'
-      - 'ext/pi-gen/**'
   pull_request:
-    paths:
-      - 'build_image.sh'
-      - 'pi-gen.config'
-      - 'stage-openmower/**'
-      - '.github/workflows/build.yaml'
+    branches:
+      - 'main'
+
+# Allow stopping obsolete workflows
+concurrency:
+  group: ci-buildtrain-${{ github.ref }}-1
+  cancel-in-progress: true
 
 permissions:
   contents: write
-
-concurrency:
-  group: ci-pigen-${{ github.ref }}
-  cancel-in-progress: true
 
 jobs:
   build:
