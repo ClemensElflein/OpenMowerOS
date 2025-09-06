@@ -1,8 +1,5 @@
 #!/bin/bash -e
 
-# Create ROS home
-mkdir -p /home/openmower/ros_home
-
 chown -R openmower:openmower /home/openmower/ /opt/stacks/openmower/
 chmod -R u=rwX,g=rwX,o=rX /home/openmower/ /opt/stacks/openmower/
 
