@@ -4,7 +4,7 @@
 #
 services:
   openmower:
-    # OpenMowerOSv2 needs an image with `-osv2` suffix
+    # OpenMowerOSv2 needs a tag with `-osv2` suffix
     image: "${REPO}:${VERSION}-osv2"
     container_name: openmower
     privileged: true
@@ -14,11 +14,12 @@ services:
       - mosquitto
     volumes:
       - /dev:/dev
-      - /home/openmower:/root
+      - /home/openmower:/home/openmower
       - /home/openmower/mower_params.yaml:/config/mower_params.yaml
       - type: volume
         source: openmower_web
         target: /opt/open_mower_ros/web
+    working_dir: /home/openmower
     environment:
       DEBUG: $DEBUG
       OM_V2: $V2_HARDWARE
