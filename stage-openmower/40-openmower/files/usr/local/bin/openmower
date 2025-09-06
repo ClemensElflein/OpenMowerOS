@@ -79,17 +79,11 @@ cmd_shell() {
     if [ "$#" -gt 0 ]; then
         exec /usr/bin/docker compose "${files[@]}" exec "$svc" "$@"
     else
-        # Source typical OpenMower/ROS env inside the container, then open a login shell
-        exec /usr/bin/docker compose "${files[@]}" exec "$svc" bash -lc '
-            [ -r "/opt/ros/$ROS_DISTRO/setup.bash" ] && source "/opt/ros/$ROS_DISTRO/setup.bash" || true;
-            [ -r /opt/open_mower_ros/devel/setup.bash ] && source /opt/open_mower_ros/devel/setup.bash || true;
-            [ -r /config/mower_config.sh ] && source /config/mower_config.sh || true;
-            if command -v rospack >/dev/null 2>&1; then
-              HW_ENV="$(rospack find open_mower)/params/hardware_specific/$OM_MOWER/default_environment.sh";
-              [ -r "$HW_ENV" ] && source "$HW_ENV" || true;
-            fi;
-            [ -r /opt/open_mower_ros/version_info.env ] && source /opt/open_mower_ros/version_info.env || true;
-        exec bash -l'
+        # Open a login shell so /etc/profile(.d) is processed inside the container.
+        # Pass env hints so the container can set a distinct prompt if desired.
+        exec /usr/bin/docker compose "${files[@]}" exec -it \
+        -e STACK_SHELL=1 -e STACK_NAME='openmower' \
+        "$svc" bash -l
     fi
 }
 
