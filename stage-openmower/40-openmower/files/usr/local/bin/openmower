@@ -1,53 +1,16 @@
 #!/bin/bash
 set -euo pipefail
 
-# libbash colors/messages
-if [ ! -f /usr/lib/bash/colors.sh ]; then
-    echo "ERROR: libbash packet required. Please install by running 'apt install libbash'"
-    exit 1
-fi
-source /usr/lib/bash/colors.sh
+# ANSI helpers
+ansi_info() { printf '\033[1;33m%s\033[0m\n' "$1"; }  # bold yellow
+ansi_error() { printf '\033[1;31m%s\033[0m\n' "$1"; } # bold red
 
-# OM Defaults (OM_VERSION, OM_REPO, ...)
-if [ ! -r /etc/default/openmower ]; then
-    colorPrintN Red "Missing /etc/default/openmower defaults!"
-    exit 2
-fi
-source /etc/default/openmower
+# Some generic vars
+COMPOSE_FILE="/opt/stacks/openmower/compose.yaml"
 
-if [ -z "${OM_VERSION}" ] || [ "${OM_VERSION}" = "choose-your-version" ]; then
-    colorPrintN Red "OM_VERSION is not set or still 'choose-your-version'."
-    colorPrintN Yellow "Edit /etc/default/openmower and set OM_VERSION to a documented value, then run: openmower pull"
-    exit 77
-fi
-
-OM_REPO="${OM_REPO:-ghcr.io/clemenselflein/open_mower_ros}"
-OM_CONTAINER="${OM_CONTAINER:-openmower}"
-
-# Compose detection (stack managed under /opt/stacks/openmower)
-OM_STACK_DIR="${OM_STACK_DIR:-/opt/stacks/openmower}"
-COMPOSE_FILE=""
-if [ -d "$OM_STACK_DIR" ]; then
-    if [ -f "$OM_STACK_DIR/compose.yaml" ]; then
-        COMPOSE_FILE="$OM_STACK_DIR/compose.yaml"
-        elif [ -f "$OM_STACK_DIR/docker-compose.yml" ]; then
-        COMPOSE_FILE="$OM_STACK_DIR/docker-compose.yml"
-    fi
-fi
-COMPOSE_MODE=0
-[ -n "$COMPOSE_FILE" ] && COMPOSE_MODE=1
-
-# Build compose -f options, including debug override when requested and present
+# Build compose -f options
 compose_files_opts() {
-    local opts=( -f "$COMPOSE_FILE" )
-    case "$OM_DEBUG" in
-        [Tt][Rr][Uu][Ee]|1|[Yy][Ee][Ss])
-            if [ -f "$OM_STACK_DIR/compose.debug.yaml" ]; then
-                opts+=( -f "$OM_STACK_DIR/compose.debug.yaml" )
-            fi
-        ;;
-    esac
-    printf '%s\n' "${opts[@]}"
+    printf '%s\n' -f "$COMPOSE_FILE"
 }
 
 usage() {
@@ -55,102 +18,78 @@ usage() {
 Usage: openmower <command> [<args>]
 
 Commands:
-  help                   Show this help
-    logs                   Show service logs (systemd/journal). Pass -f to follow.
-    container-logs|clogs   Show container logs (docker or compose). Defaults to follow.
-    pull                   Pull container image(s). Uses compose when a stack exists.
-    restart                Restart the OpenMower unit
-    start                  Start the OpenMower unit
-    status                 Show the OpenMower unit status
-    stop                   Stop the OpenMower unit
-    shell|exec             Open a shell inside the running container
+  help                     Show this help.
+  logs [svc...]            Tail container logs. Defaults: all services, -f --tail 100.
+  pull                     Pull image(s) for the stack.
+  start                    Start the stack.
+  stop                     Stop the stack.
+  restart                  Restart the stack.
+  status|ps                Show stack status.
+  shell|exec [svc] [cmd]   Exec into a service/container (default svc: openmower, default cmd: bash -l)
 
 USAGE
 }
 
 cmd_pull() {
-    if [ $COMPOSE_MODE -eq 1 ]; then
-        colorPrintN Yellow "Pulling compose stack images from $COMPOSE_FILE ..."
-        # Pass OM_IMAGE to match systemd unit behavior
-        export OM_IMAGE="${OM_IMAGE:-${OM_REPO}:${OM_VERSION}}"
-        # Gather -f options (include debug override when OM_DEBUG is true)
-        mapfile -t files < <(compose_files_opts)
-        exec /usr/bin/docker compose "${files[@]}" pull
-    else
-        local image
-        image="${OM_IMAGE:-${OM_REPO}:${OM_VERSION}}"
-        colorPrintN Yellow "Pulling ${image} ..."
-        exec /usr/bin/docker pull "${image}"
-    fi
+    ansi_info "Pulling compose stack images from $COMPOSE_FILE ..."
+    mapfile -t files < <(compose_files_opts)
+    exec /usr/bin/docker compose "${files[@]}" pull
 }
 
-_unit_name() {
-    echo "openmower.service"
+cmd_start() {
+    mapfile -t files < <(compose_files_opts)
+    exec /usr/bin/docker compose "${files[@]}" up -d
 }
 
-cmd_start() { systemctl start "$(_unit_name)"; }
-cmd_stop() { systemctl stop "$(_unit_name)"; }
-cmd_restart() { systemctl restart "$(_unit_name)"; }
-cmd_status() { systemctl status --no-pager "$(_unit_name)"; }
+cmd_stop() {
+    mapfile -t files < <(compose_files_opts)
+    exec /usr/bin/docker compose "${files[@]}" stop
+}
 
-# Service logs (journal). If no args, show last 200 lines; otherwise pass through.
+cmd_restart() {
+    mapfile -t files < <(compose_files_opts)
+    exec /usr/bin/docker compose "${files[@]}" restart
+}
+
+cmd_status() {
+    mapfile -t files < <(compose_files_opts)
+    /usr/bin/docker compose "${files[@]}" ps
+}
+
+# Logs: default follow and show last 100 lines. Accepts optional service names.
 cmd_logs() {
-    local unit
-    unit="$(_unit_name)"
-    if [ "$#" -eq 0 ]; then
-        journalctl -u "$unit" -n 200 --no-pager
-    else
-        journalctl -u "$unit" --no-pager "$@"
-    fi
-}
-
-# Container logs (docker). By default follow and show last 100 lines.
-cmd_container_logs() {
     local default=( -f --tail 100 )
-    if [ $COMPOSE_MODE -eq 1 ]; then
-        if [ "$#" -eq 0 ]; then
-            mapfile -t files < <(compose_files_opts)
-            /usr/bin/docker compose "${files[@]}" logs -f --tail 100
-        else
-            mapfile -t files < <(compose_files_opts)
-            /usr/bin/docker compose "${files[@]}" logs "$@"
-        fi
+    mapfile -t files < <(compose_files_opts)
+    if [ "$#" -eq 0 ]; then
+        /usr/bin/docker compose "${files[@]}" logs -f --tail 100
     else
-        if [ "$#" -eq 0 ]; then
-            /usr/bin/docker logs "${default[@]}" "${OM_CONTAINER}"
-        else
-            /usr/bin/docker logs "$@" "${OM_CONTAINER}"
-        fi
+        /usr/bin/docker compose "${files[@]}" logs "$@"
     fi
 }
 
 # Open an interactive shell inside the running container
 cmd_shell() {
     # If a command is provided, execute it; otherwise open bash
-    if [ $COMPOSE_MODE -eq 1 ]; then
-        # Assume service name 'openmower' in the stack; if a different name is used, pass it as first arg
-        local svc="openmower"
-        if [ "$#" -gt 0 ] && ! [[ "$1" =~ ^- ]]; then
-            svc="$1"; shift
-        fi
-        mapfile -t files < <(compose_files_opts)
-        if [ "$#" -gt 0 ]; then
-            exec /usr/bin/docker compose "${files[@]}" exec "$svc" "$@"
-        else
-            exec /usr/bin/docker compose "${files[@]}" exec "$svc" /bin/bash -l
-        fi
+    # Assume service name 'openmower' in the stack; if a different name is used, pass it as first arg
+    local svc="openmower"
+    if [ "$#" -gt 0 ] && ! [[ "$1" =~ ^- ]]; then
+        svc="$1"; shift
+    fi
+    mapfile -t files < <(compose_files_opts)
+    if [ "$#" -gt 0 ]; then
+        exec /usr/bin/docker compose "${files[@]}" exec "$svc" "$@"
     else
-        if /usr/bin/docker ps --format '{{.Names}}' | grep -qx "${OM_CONTAINER}"; then
-            if [ "$#" -gt 0 ]; then
-                exec /usr/bin/docker exec -it "${OM_CONTAINER}" "$@"
-            else
-                exec /usr/bin/docker exec -it "${OM_CONTAINER}" /bin/bash -l
-            fi
-        else
-            colorPrintN Red "Container '${OM_CONTAINER}' is not running."
-            colorPrintN Yellow "Start it with: systemctl start openmower.service"
-            exit 3
-        fi
+        # Source typical OpenMower/ROS env inside the container, then open a login shell
+        exec /usr/bin/docker compose "${files[@]}" exec "$svc" bash -lc '
+            [ -r "/opt/ros/$ROS_DISTRO/setup.bash" ] && source "/opt/ros/$ROS_DISTRO/setup.bash" || true;
+            [ -r /opt/open_mower_ros/devel/setup.bash ] && source /opt/open_mower_ros/devel/setup.bash || true;
+            [ -r /config/mower_config.sh ] && source /config/mower_config.sh || true;
+            if command -v rospack >/dev/null 2>&1; then
+              HW_ENV="$(rospack find open_mower)/params/hardware_specific/$OM_MOWER/default_environment.sh";
+              [ -r "$HW_ENV" ] && source "$HW_ENV" || true;
+            fi;
+            [ -r /opt/open_mower_ros/version_info.env ] && source /opt/open_mower_ros/version_info.env || true;
+        exec bash -l'
     fi
 }
 
@@ -162,13 +101,12 @@ main() {
         start) shift || true; cmd_start "$@" ;;
         stop) shift || true; cmd_stop "$@" ;;
         restart) shift || true; cmd_restart "$@" ;;
-        status) shift || true; cmd_status "$@" ;;
-        logs) shift || true; cmd_logs "$@" ;;
-        container-logs|clogs|docker-logs|dlogs) shift || true; cmd_container_logs "$@" ;;
+        status|ps) shift || true; cmd_status "$@" ;;
+        logs|clogs) shift || true; cmd_logs "$@" ;;
         shell|exec) shift || true; cmd_shell "$@" ;;
         help|--help|-h|"") usage ;;
         *)
-            colorPrintN Red "Unknown command: ${cmd}"
+            ansi_error "Unknown command: ${cmd}"
             usage
             exit 2
         ;;
