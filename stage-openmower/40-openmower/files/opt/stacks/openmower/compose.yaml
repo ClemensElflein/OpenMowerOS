@@ -64,4 +64,3 @@ volumes:
 x-dockge:
   urls:
   - http://${HOSTNAME}:8080
-  - ws://${HOSTNAME}:9001
