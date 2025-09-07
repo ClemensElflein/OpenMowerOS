@@ -26,7 +26,7 @@ This repository contains the official OpenMowerOS image for running the [OpenMow
 Tip: Click a section title to expand/collapse.
 
 <details>
-<summary>Install OpenMowerOS on your Pi4/CM4</summary>
+<summary><b>Install OpenMowerOS on your Pi4/CM4</b></summary>
 
 
 1. Flash the latest image (link TODO) to an SD card, preferably using [**Raspberry Pi** Imager](https://www.raspberrypi.com/software/).
@@ -42,7 +42,7 @@ Tip: Click a section title to expand/collapse.
 </details>
 
 <details>
-<summary>First boot and network setup</summary>
+<summary><b>First boot and network setup</b></summary>
 
 3. After writing the image, eject the card, insert it into your mowers Pi4 or xCore, and turn it on.
 
@@ -74,7 +74,7 @@ If you didn't enter your Wifi settings when asked for the custom settings during
  </details>
 
 <details>
-<summary>Manage OpenMower stack (GUI + CLI)</summary>
+<summary><b>Manage OpenMower stack (GUI + CLI)</b></summary>
 <br>
 'Dockge' (a container manager GUI) gets automatically pulled and started after a couple of minutes (after final boot).<br>
 For each relevant GUI action, a CLI alternative is available via the `openmower` helper script; both are listed below.<br><br>
