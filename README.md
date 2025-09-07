@@ -6,8 +6,7 @@ This repository contains the official OpenMowerOS image for running the [OpenMow
 
 ➡️ What’s new in the latest release? See [WHATSNEW.md](./WHATSNEW.md).
 
-
-## Reference Information
+## Reference/Default Information
 
 - **hostname**: openmower
 
@@ -15,7 +14,7 @@ This repository contains the official OpenMowerOS image for running the [OpenMow
 
 - **password**: openmower ***CHANGE IT! (use `passwd` for that)***
 
-- **ssh**: enabled on port 22
+- **ssh**: enabled
 
 - **hotspot SSID**: OpenMower-\<somenumber\> (no password)
 
@@ -24,56 +23,88 @@ This repository contains the official OpenMowerOS image for running the [OpenMow
 
 ## How to Get Started
 
-### Required
+Tip: Click a section title to expand/collapse.
 
-1. Burn the latest image available to an SD card. Preferably with [**Raspberry Pi** Imager](https://www.raspberrypi.com/software/).
+<details>
+<summary>Install OpenMowerOS on your Pi4/CM4</summary>
 
-2. ***Option A: Pi-Imager-Configuration***<br>
-   When asked by Pi Imager, you may change some custom settings:
-   1. Like shown here, but **never** use another username than `openmower`!<br>
+
+1. Flash the latest image (link TODO) to an SD card, preferably using [**Raspberry Pi** Imager](https://www.raspberrypi.com/software/).
+
+2. ***Optional: Raspberry Pi Imager configuration***<br>
+   When prompted by Raspberry Pi Imager, you can change some custom settings:
+   1. As shown here, but never use a username other than `openmower`!<br>
    ![General Settings](.github/img/rpimager_general.png)
-   1. You may also add your SSH's public key for quicker SSH login,
-   but login via password remains active (even if it's a radio selector)<br>
+   2. You may also add your SSH public key for quicker SSH login;
+   password login remains active (even if it's an either/or selection).<br>
    ![SSH Settings](.github/img/rpimager_ssh.png)
    
+</details>
 
-1. Once written, eject the card, put it in the mower and turn it on.
+<details>
+<summary>First boot and network setup</summary>
 
-2. Your Pi will boot multiple times. Sometimes, after the first boot, it fails rebooting (red LED near the HDMI plug remains on, whereas green one doesn't flicker anymore). If that happen, one power-cycle will get him back on track.
+3. After writing the image, eject the card, insert it into your mowers Pi4 or xCore, and turn it on.
 
-3. ***Option B: Comitup-Hotspot***<br>
-If you didn't entered your Wi-Fi Credentials when asked for the custom settings in the Raspberry Pi Imager (see step 2.), or even accidentally entered the wrong ones:
+4. Your Pi will boot multiple times.<br>
+   ***Sometimes, after the first boot, it may fail to reboot*** (red LED near the HDMI plug remains on, whereas the green one doesn't flicker anymore). If that happens, a power cycle will get it back on track.
 
-   1. After a short time an "OpenMower-\<somenumber>" wifi hotspot should appear - connect to it.
+5. ***If you skipped step 2: Comitup hotspot***<br>
+If you didn't enter your Wifi settings when asked for the custom settings during Pi Imager (see step 2), or if you accidentally entered the wrong Wifi settings:
 
-   2. Once you are connected to the hotspot your default browser should automatically open and you should see the wifi configuration webpage (if it doesn't open automatically, open http://10.41.0.1 with your browser):
+   1. After a short time, an "OpenMower-\<somenumber>" Wifi hotspot should appear. Connect to it.
+
+   2. Once you are connected to the OpenMower-\<somenumber> hotspot, your default browser should open automatically and display the WiFi configuration page (if not, open http://10.41.0.1).
 
       <p align="center"><img src=".github/img/comitup_hotspot.png" style="width:50%"></p>
 
-   3. Click on your home wifi and fill in you password.
+   3. Click on your home WiFi and fill in your password.
 
-   4. The hotspot will disappear and the mower should connect to your wifi.
+   4. The hotspot will disappear and the mower should connect to your WiFi.
 
-1. Try pinging your mower via `ping openmower` (or the hostname you entered during Pi Imager). If the host can't be found, check your router for the mowers IP address.
+6. Try pinging your mower via `ping openmower` (or the hostname you entered during Pi Imager). If the host can't be found, check your router for the mower's IP address.
 
-2.  SSH to your mower via `ssh openmower@openmower` or even `ssh openmower@<your hostname or mowers IP address>` (password "openmower" or the one your entered during Pi Imager).
+7.  SSH into your mower via `ssh openmower@openmower` or `ssh openmower@<your hostname or mower's IP address>` (password 'openmower' or the one you entered during Raspberry Pi Imager).
 
-3. ***Option B: Comitup-Hotspot***<br>
-   1. Change your password! (`passwd`).
-   2. Use `raspi-config` to change keyboard, timezone, WLAN country and the like.
-
-4. Edit `nano /etc/default/openmower` and change `OM_VERSION` to your preferred one.
-
-5. Pull the selected `OM_VERSION` by running `openmower-pull.sh`.
-
-7. TODO: Restart openmower service via `systemctl restart openmower`
-
-8. TODO: Check if everything runs fine by accessing the logs `docker logs -f openmower`
+8. ***Optional:***<br>
+   1. If you didn't configure a custom password during step 2, change your password now via `passwd`.
+   2. Use `raspi-config` to change keyboard, timezone, WLAN country and the like (if not configured in Raspberry Pi Imager's custom settings).
 
 
-### Optional
+ </details>
 
-TODO: - theoretically there is an auto update feature for podman but is it not tested yet
+<details>
+<summary>Manage OpenMower stack (GUI + CLI)</summary>
+<br>
+'Dockge' (a container manager GUI) gets automatically pulled and started after a couple of minutes (after final boot).<br>
+For each relevant GUI action, a CLI alternative is available via the `openmower` helper script; both are listed below.<br><br>
 
-FIXME: For ROS specific commands (e.g. `rostopic echo`) use `./start_ros_bash` in the `/home/openmower` directory. This will allow you to access ROS.
+9. Connect to the container manager:
+   - GUI: Open <http://openmower:5001> (or your individual hostname if changed), and create a Dockge admin user with your preferred credentials:<br>
+   ![Create Admin Account](.github/img/dockge_01.jpg)
+   - CLI: SSH into your Pi: `ssh openmower@openmower` (or your configured hostname).
+
+10. Configure the stack (.env)
+    - GUI: 
+      ![](.github/img/dockge_02_select_and_edit.jpg)
+      ![](.github/img/dockge_03_edit.jpg)
+      ![](.github/img/dockge_04_save.jpg)
+    - CLI: `mcedit /opt/stacks/openmower/.env`
+
+11. Start the stack (inclusive initial pull)
+    - GUI: 
+      ![](.github/img/dockge_05_start.jpg)
+    - CLI:
+      ```
+      openmower pull
+      openmower start
+      ```
+
+12. Check status and open the OpenMower webApp
+    - GUI:
+      ![](.github/img/dockge_06_active.jpg)
+      - CLI: `openmower status` should list three services (mosquitto, nginx, and openmower), all with status 'up'.<br>
+         If so, open a browser and visit http://openmower:8080 (or your configured hostname).
+
+</details>
 
