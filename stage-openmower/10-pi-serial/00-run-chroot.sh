@@ -24,7 +24,7 @@ fi
 
 # Mask and stop serial getty instances that could grab ttyAMA[0-4] (or its common aliases)
 for n in 0 1 2 3 4; do
-    for svc in serial-getty@ttyAMA${n}; do
+    for svc in "serial-getty@ttyAMA${n}"; do
         systemctl disable --now "$svc.service" 2>/dev/null
         systemctl mask "$svc.service" 2>/dev/null
     done
