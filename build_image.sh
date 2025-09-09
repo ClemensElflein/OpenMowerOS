@@ -48,14 +48,14 @@ if [ "${FRESH:-0}" = "1" ]; then
     (${DOCKER_BIN} rm -v pigen_work_cont >/dev/null 2>&1 || true)
     (${DOCKER_BIN} rm -v pigen_work >/dev/null 2>&1 || true)
     # Ensure loop module is available on host (best effort)
-    (lsmod | grep -q '^loop' || sudo modprobe loop) >/dev/null 2>&1 || true
+    (lsmod | grep -q '^loop' || sudo modprobe loop) >/dev/null 2>&1
     # Detach stale loop devices on host to avoid losetup confusion
-    (sudo losetup -D) >/dev/null 2>&1 || true
+    (sudo losetup -D) >/dev/null 2>&1
 fi
 
 # Optional manual loop cleanup without full FRESH rebuild
 if [ "${CLEAN_LOOPS:-0}" = "1" ]; then
-    (sudo losetup -D) >/dev/null 2>&1 || true
+    (sudo losetup -D) >/dev/null 2>&1
 fi
 
 cd "${PIGEN_DIR}"

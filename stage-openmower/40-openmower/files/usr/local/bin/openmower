@@ -58,7 +58,6 @@ cmd_status() {
 
 # Logs: default follow and show last 100 lines. Accepts optional service names.
 cmd_logs() {
-    local default=( -f --tail 100 )
     mapfile -t files < <(compose_files_opts)
     if [ "$#" -eq 0 ]; then
         /usr/bin/docker compose "${files[@]}" logs -f --tail 100
@@ -91,13 +90,13 @@ main() {
     local cmd="${1:-}"
     
     case "${cmd}" in
-        pull) shift || true; cmd_pull "$@" ;;
-        start) shift || true; cmd_start "$@" ;;
-        stop) shift || true; cmd_stop "$@" ;;
-        restart) shift || true; cmd_restart "$@" ;;
-        status|ps) shift || true; cmd_status "$@" ;;
-        logs|clogs) shift || true; cmd_logs "$@" ;;
-        shell|exec) shift || true; cmd_shell "$@" ;;
+        pull) shift; cmd_pull "$@" ;;
+        start) shift; cmd_start "$@" ;;
+        stop) shift; cmd_stop "$@" ;;
+        restart) shift; cmd_restart "$@" ;;
+        status|ps) shift; cmd_status "$@" ;;
+        logs|clogs) shift; cmd_logs "$@" ;;
+        shell|exec) shift; cmd_shell "$@" ;;
         help|--help|-h|"") usage ;;
         *)
             ansi_error "Unknown command: ${cmd}"
