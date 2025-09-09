@@ -6,3 +6,4 @@ STAGE_DIR="$(dirname "$0")"
 
 # Install files
 install -m 0755 -D "$STAGE_DIR/files/usr/lib/raspberrypi-sys-mods/imager_custom" "$ROOTFS_DIR/usr/lib/raspberrypi-sys-mods/imager_custom"
+install -m 0755 -D "$STAGE_DIR/files/boot/firmware/config.addendum" "$ROOTFS_DIR/boot/firmware/config.addendum"
