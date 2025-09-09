@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash -ex
 # Disable serial console on ttyAMA0 (and aliases); these UARTs are used by the robot.
 # Removes console=serial0/ttyAMA0/ttyS0 from cmdline and masks serial getty units.
 
