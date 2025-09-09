@@ -13,8 +13,14 @@ clean_cmdline() {
 }
 
 # Handle both possible locations used across Raspberry Pi OS releases
-clean_cmdline /boot/firmware/cmdline.txt
-clean_cmdline /boot/cmdline.txt
+if [ -e /boot/firmware/cmdline.txt ]; then
+  clean_cmdline /boot/firmware/cmdline.txt
+elif [ -e /boot/cmdline.txt ]; then
+  clean_cmdline /boot/cmdline.txt
+else
+  echo "cmdline.txt not found in /boot/firmware or /boot" >&2
+  exit 1
+fi
 
 # Mask and stop serial getty instances that could grab ttyAMA[0-4] (or its common aliases)
 for n in 0 1 2 3 4; do
