@@ -1,6 +1,6 @@
 #!/bin/bash -e
 # Disable serial console on ttyAMA0 (and aliases); these UARTs are used by the robot.
-# Removes console=serial0/ttyAMA0/ttyS0 from cmdline and masks serial getty units.
+# clean_cmdline removes `console=serial0`/`ttyAMA0`/`ttyS0` entries from the given cmdline file, normalizes whitespace, and writes the modified content back (the file must exist).
 
 clean_cmdline() {
     local f="$1"
