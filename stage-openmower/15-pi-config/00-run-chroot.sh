@@ -85,7 +85,14 @@ EOF
 }
 
 # Handle both possible locations across releases
-add_examples /boot/firmware/config.txt
-add_examples /boot/config.txt
+# Handle both possible locations across releases
+if [ -e /boot/firmware/config.txt ]; then
+  add_examples /boot/firmware/config.txt
+elif [ -e /boot/config.txt ]; then
+  add_examples /boot/config.txt
+else
+  echo "config.txt not found in /boot/firmware or /boot" >&2
+  exit 1
+fi
 
 exit 0
