@@ -2,7 +2,7 @@
 
 export DEBIAN_FRONTEND=noninteractive
 
-systemctl mask systemd-networkd-wait-online.service || true
+systemctl mask systemd-networkd-wait-online.service
 
 cat >> "/etc/dhcpcd.conf" <<'EOF'
 

@@ -14,5 +14,5 @@ install -m 0664 -D "$STAGE_DIR/files/etc/dnsmasq.d/10-openmower.conf" "$ROOTFS_D
 PI_GEN_EXPORT_DIR="/pi-gen/export-image/03-network"
 if [ -d "/pi-gen/export-image/03-network" ]; then
     echo "[25-lan] Disabling export-image/03-network resolv.conf injection at $PI_GEN_EXPORT_DIR/01-run.sh"
-    rm -f "$PI_GEN_EXPORT_DIR/01-run.sh" || true
+    rm -f "$PI_GEN_EXPORT_DIR/01-run.sh"
 fi
