@@ -4,8 +4,7 @@
 #
 services:
   openmower:
-    # OpenMowerOSv2 needs a tag with `-osv2` suffix
-    image: "${REPO}:${VERSION}-osv2"
+    image: "${REPO}:${VERSION}"
     container_name: openmower
     privileged: true
     restart: unless-stopped
