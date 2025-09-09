@@ -12,8 +12,6 @@ export DEBIAN_FRONTEND=noninteractive
 # Minimal deps for fetching & unpacking
 apt-get update
 apt-get install -y --no-install-recommends curl jq unzip ca-certificates
-
-# Allow override via env at build time; default to your repo
 REPO="ClemensElflein/openmower-cli"
 
 API="https://api.github.com/repos/${REPO}/releases/latest"
@@ -57,4 +55,4 @@ install -m 0755 "$tmp/openmower" /usr/local/bin/openmower
 
 # Nice to have: verify it responds (won't fail the build if it doesn't)
 echo "✓ Installed. Version check (if supported):"
-/usr/local/bin/openmower --version || true
+/usr/local/bin/openmower --version
