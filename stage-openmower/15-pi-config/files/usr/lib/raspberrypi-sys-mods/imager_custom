@@ -10,7 +10,7 @@ set -euo pipefail
 #set -x
 
 cmd=${1:-}
-shift || true
+shift
 
 case "$cmd" in
     set_wlan)
@@ -22,11 +22,11 @@ case "$cmd" in
         fi
         # Ensure regulatory domain (best effort)
         if [[ -n "$COUNTRY" ]]; then
-            rfkill unblock wifi || true
-            iw reg set "$COUNTRY" || true
+            rfkill unblock wifi
+            iw reg set "$COUNTRY"
         fi
         # Create NM profile named like the SSID
-        systemctl start NetworkManager.service || true
+        systemctl start NetworkManager.service
         nmcli con add type wifi ifname "" con-name "$SSID" ssid "$SSID"
         nmcli con modify "$SSID" wifi-sec.key-mgmt wpa-psk wifi-sec.psk "$PSK"
         nmcli con modify "$SSID" connection.autoconnect yes
@@ -37,26 +37,26 @@ case "$cmd" in
         if [[ -n "$HN" ]]; then
             CURRENT_HOSTNAME=$(tr -d " \t\n\r" </etc/hostname)
             echo "$HN" >/etc/hostname
-            sed -i "s/127.0.1.1.*$CURRENT_HOSTNAME/127.0.1.1\t$HN/g" /etc/hosts || true
+            sed -i "s/127.0.1.1.*$CURRENT_HOSTNAME/127.0.1.1\t$HN/g" /etc/hosts
         fi
     ;;
     
     set_keymap)
         LAYOUT=${1:-}
         if [[ -n "$LAYOUT" ]]; then
-            sed -i "s/^XKBLAYOUT=.*/XKBLAYOUT=\"$LAYOUT\"/" /etc/default/keyboard || true
-            setupcon -k || true
-            dpkg-reconfigure -f noninteractive keyboard-configuration console-setup || true
-            update-initramfs -u || true
+            sed -i "s/^XKBLAYOUT=.*/XKBLAYOUT=\"$LAYOUT\"/" /etc/default/keyboard
+            setupcon -k
+            dpkg-reconfigure -f noninteractive keyboard-configuration console-setup
+            update-initramfs -u
         fi
     ;;
     
     set_timezone)
         TZ=${1:-}
         if [[ -n "$TZ" ]]; then
-            rm -f /etc/localtime || true
+            rm -f /etc/localtime
             echo "$TZ" >/etc/timezone
-            dpkg-reconfigure -f noninteractive tzdata || true
+            dpkg-reconfigure -f noninteractive tzdata
         fi
     ;;
     
@@ -68,7 +68,7 @@ case "$cmd" in
             install -o "$TARGET_USER" -m 700 -d "$TARGET_HOME/.ssh"
             install -o "$TARGET_USER" -m 600 <(printf "%s\n" "$2") "$TARGET_HOME/.ssh/authorized_keys"
         fi
-        systemctl enable ssh || true
+        systemctl enable ssh
     ;;
     
     *)
