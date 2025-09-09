@@ -27,7 +27,7 @@ mower_logic:
   docking_extra_time: 1.0
   docking_retry_count: 3
   docking_redock: false
-  outline_overlap_count: 0
+  outline_overlap_count: 1
   mow_angle_offset: 0
   mow_angle_offset_is_absolute: false
   mow_angle_increment: 110
@@ -40,7 +40,7 @@ mower_logic:
   undock_angled_distance: 2.0
   undock_angle: 45.0
   undock_fixed_angle: false
-  undock_use_curve: false
+  undock_use_curve: true
   # Once you validated the functionality of your emergency sensors,
   # set this to true to enable the mow-motor
   enable_mower: false
