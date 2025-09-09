@@ -18,7 +18,7 @@ interface eth0
 # (matches full name, or prefixed with 2 numbers optionally ending with .sh)
 nohook resolv.conf
 
-# ... instead of sending DNS-Informationen an resolvconf
+# ... instead of send DNS-Informationen to resolvconf
 option domain_name_servers domain_name domain_search
 EOF
 

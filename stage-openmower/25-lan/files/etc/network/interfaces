@@ -4,7 +4,7 @@ iface lo inet loopback
 # AH20250831 Multiple IPs/net-device are also possible with NetworkManager,
 #   but NMs DHCP gets angry if it can't get an IP and start resetting eth0
 #   after a couple of tries. By this it looses the internal LAN IP.
-#   Remember CM4's LAN interface has always a carrier because it's wired with
+#   Remember: CM4's LAN interface has always a carrier because it's wired with
 #   xCore's switch and not the LAN plug on the carrier board.
 
 auto eth0
