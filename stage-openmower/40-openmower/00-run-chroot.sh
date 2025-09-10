@@ -60,3 +60,14 @@ echo "✓ Installed. Version check (if supported):"
 echo "→ Installing tab completion for /usr/local/bin/openmower"
 sudo -u openmower /usr/local/bin/openmower --install-completion
 echo "✓ Installed"
+
+echo "→ Updating bash prompts to show 🐳 when STACK_NAME is set"
+for f in /home/openmower/.bashrc /root/.bashrc; do
+  cat >> "$f" <<'OMEOF'
+
+# Prefix PS1 with docker whale if in stack context
+if [ -n "$STACK_NAME" ]; then
+    PS1="🐳 $PS1"
+fi
+OMEOF
+done
