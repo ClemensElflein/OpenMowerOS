@@ -56,3 +56,7 @@ install -m 0755 "$tmp/openmower" /usr/local/bin/openmower
 # Nice to have: verify it responds (won't fail the build if it doesn't)
 echo "✓ Installed. Version check (if supported):"
 /usr/local/bin/openmower --version
+
+echo "→ Installing tab completion for /usr/local/bin/openmower"
+sudo -u openmower /usr/local/bin/openmower --install-completion
+echo "✓ Installed"
