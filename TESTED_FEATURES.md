@@ -19,7 +19,6 @@ Legend: ✅ Pass · ❌ Fail · 🟡 Todo · 🔁 Retry · 🧪 Manual-only
 | Dockge                | Reachable at port 5001                    |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |      ✅       |      🟡       |      🟡       |
 | ESC access            | Ports get exposed and are usabled         |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |
 | GNSS access           | Port is exposed and usabled               |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |
-| xCore Multicast       | Reachable from outside                    |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |
 
 ## Notes
 

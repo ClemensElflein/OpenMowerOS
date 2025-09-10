@@ -1,4 +1,4 @@
-# OpenMowerOS v2.0 — What’s new (2025-09-07)
+# OpenMowerOS v2.0 — What’s new (2025-09-10)
 
 This document highlights the most relevant changes compared to previous OpenMowerOS images.
 
@@ -8,14 +8,15 @@ This document highlights the most relevant changes compared to previous OpenMowe
 - ✍️ No need to edit files like `/boot/openmower/openmower_version.txt` before the first boot.
 - 🚀 No delay for the initial image pull on first boot (except a 1–2 minute Dockge pull).
 - 🖥️ [Dockge](https://dockge.kuma.pet/) GUI for container management.
-- 🧰 A generic `openmower` script for essential tasks: pull/start/stop, status, logs, …
+- 🧰 A powerful `openmower` CLI command for all tasks like configure, pull, start, stop, status, shell, logs, …
 - 👤 Containers run with openmower permissions. No sudo required for openmower‑related edits, start, stop, …
 - 🗂️ All relevant configs, maps, and logs live in `/home/openmower`.
 
 ## 🛠️ Under the hood (for the curious)
 
 - 🐧 Debian Trixie (arm64) images built with [pi‑gen](https://github.com/RPi-Distro/pi-gen).
-- 📁 OpenMower scripts moved to `/usr/local/[s]bin`.
+- 📁 `openmower` CLI command in `/usr/local/bin`.
+- 🐳 OpenMower stack: Mosquitto and Nginx now run as separate containers and are no longer built into the openmower image.
 - 📶 WLAN is managed by NetworkManager.
 - 🔌 LAN is managed by ifupdown.
 - 📡 DHCP for the internal (xCore) LAN is handled by dnsmasq.

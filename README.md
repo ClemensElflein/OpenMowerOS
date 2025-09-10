@@ -77,7 +77,7 @@ If you didn't enter your Wifi settings when asked for the custom settings during
 <summary><b>Manage OpenMower stack (GUI + CLI)</b></summary>
 <br>
 'Dockge' (a container manager GUI) gets automatically pulled and started after a couple of minutes (after final boot).<br>
-For each relevant GUI action, a CLI alternative is available via the `openmower` helper script; both are listed below.<br><br>
+For each relevant GUI action, a CLI alternative is available via a powerful `openmower` command; both are listed below.<br><br>
 
 9. Connect to the container manager:
    - GUI: Open <http://openmower:5001> (or your individual hostname if changed), and create a Dockge admin user with your preferred credentials:<br>
@@ -89,7 +89,7 @@ For each relevant GUI action, a CLI alternative is available via the `openmower`
       ![](.github/img/dockge_02_select_and_edit.jpg)
       ![](.github/img/dockge_03_edit.jpg)
       ![](.github/img/dockge_04_save.jpg)
-    - CLI: `mcedit /opt/stacks/openmower/.env`
+    - CLI: `openmower configure`
 
 11. Start the stack (inclusive initial pull)
     - GUI: 
