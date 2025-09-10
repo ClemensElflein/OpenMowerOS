@@ -62,7 +62,7 @@ sudo -u openmower /usr/local/bin/openmower --install-completion
 echo "✓ Installed"
 
 echo "→ Updating bash prompts to show 🐳 when STACK_NAME is set"
-for f in /home/openmower/.bashrc /root/.bashrc; do
+for f in /home/openmower/.bashrc /root/.bashrc /etc/skel/.bashrc; do
   cat >> "$f" <<'OMEOF'
 
 # Prefix PS1 with docker whale if in stack context
