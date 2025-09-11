@@ -2,24 +2,27 @@
 
 Legend: ✅ Pass · ❌ Fail · 🟡 Todo · 🔁 Retry · 🧪 Manual-only
 
-| Feature                  | Expected                                  | OM‑V1<br>Pi4 | OM‑V1<br>CM4 | OM‑V1<br>Pi5 | OM‑V1<br>CM5 | OM‑V2<br>Pi4 | OM‑V2<br>CM4 | OM‑V2<br>Pi5 | OM‑V2<br>CM5 |
-| ------------------------ | ----------------------------------------- | :----------: | :----------: | :----------: | :----------: | :----------: | :----------: | :----------: | :----------: |
-| Debian release           | Debian GNU/Linux 13 (trixie)              |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |      ✅       |      🟡       |      🟡       |
-| Hostname default         | `openmower`                               |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |      ✅       |      🟡       |      🟡       |
-| Hostname                 | \<set by imager>                          |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |      ✅       |      🟡       |      🟡       |
-| Default user             | `openmower` / `openmower`                 |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |      ✅       |      🟡       |      🟡       |
-| SSH enabled              | SSH active on first boot                  |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |      ✅       |      🟡       |      🟡       |
-| Imager Wi‑Fi             | Preseeded Wi‑Fi connects on first boot    |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |      ✅       |      🟡       |      🟡       |
-| Imager openmower pass    | Applied when configured                   |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |      ✅       |      🟡       |      🟡       |
-| No known Wi‑Fi           | Comitup AP appears (default SSID pattern) |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |      ✅       |      🟡       |      🟡       |
-| AP portal                | Able to configure Wi‑Fi, then joins WLAN  |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |      ✅       |      🟡       |      🟡       |
-| Internal LAN             | xCore is getting an IPv4                  |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |      ✅       |      🟡       |      🟡       |
-| Home LAN                 | eth0 IPv4 by your networks DHCP           |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |      ✅       |      🟡       |      🟡       |
-| SSH                      | Reachable after network is up             |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |      ✅       |      🟡       |      🟡       |
-| Dockge                   | Reachable at port 5001                    |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |      ✅       |      🟡       |      🟡       |
-| ESC access               | Ports get exposed via `openmower ...` cmd |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |
-| GNSS access              | Port get exposed via `openmower ...` cmd  |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |
-| Container shell (prefix) | `openmower shell` has docker prefix       |      🟡       |      🟡       |      🟡       |      🟡       |      🟡       |      ✅       |      🟡       |      🟡       |
+| Feature                                  | Expected                                  | HW‑V1<br>Pi4 | HW‑V2<br>CM4 | HW‑V2<br>CM5 |
+| ---------------------------------------- | ----------------------------------------- | :----------: | :----------: | :----------: |
+| Auto-reboot after initial boot           | yes, but seem to be a bug                 |      🟡       |      🧪       |      🟡       |
+| Debian release `lsb_release -a`          | Debian GNU/Linux 13 (trixie)              |      🟡       |      ✅       |      🟡       |
+| OpenMowerOS release `cat /etc/rpi-issue` | OpenMowerOS v2.x YYYY-MM-DD               |      🟡       |      ✅       |      🟡       |
+| Hostname (default) `hostname`            | openmower                                 |      🟡       |      ✅       |      🟡       |
+| Hostname (non- default) `hostname`       | <as set by imager>                        |      🟡       |      ✅       |      🟡       |
+| Default user/password                    | openmower/openmower                       |      🟡       |      ✅       |      🟡       |
+| SSH enabled                              | SSH active on first boot                  |      🟡       |      ✅       |      🟡       |
+| SSH public key                           | Password less SSH login via SSH-key       |      🟡       |      ✅       |      🟡       |
+| Imager Wi‑Fi                             | Preseeded Wi‑Fi connects on first boot    |      🟡       |      ✅       |      🟡       |
+| Imager openmower pass                    | Applied when configured                   |      🟡       |      ✅       |      🟡       |
+| No known Wi‑Fi                           | Comitup AP appears (default SSID pattern) |      🟡       |      ✅       |      🟡       |
+| AP portal                                | Able to configure Wi‑Fi, then joins WLAN  |      🟡       |      ✅       |      🟡       |
+| Internal LAN                             | xCore is getting an IPv4                  |      🟡       |      ✅       |      🟡       |
+| Home LAN                                 | eth0 IPv4 by your networks DHCP           |      🟡       |      ✅       |      🟡       |
+| SSH                                      | Reachable after network is up             |      🟡       |      ✅       |      🟡       |
+| Dockge                                   | Reachable at port 5001                    |      🟡       |      ✅       |      🟡       |
+| ESC access                               | Ports get exposed via `openmower ...` cmd |      🟡       |      🟡       |      🟡       |
+| GNSS access                              | Port get exposed via `openmower ...` cmd  |      🟡       |      🟡       |      🟡       |
+| Container shell (prefix)                 | `openmower shell` has docker prefix       |      🟡       |      ✅       |      🟡       |
 
 ## Notes
 
