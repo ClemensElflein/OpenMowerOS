@@ -4,7 +4,7 @@ Legend: ✅ Pass · ❌ Fail · 🟡 Todo · 🔁 Retry · 🧪 Manual-only
 
 | Feature                                  | Expected                                  | HW‑V1<br>Pi4 | HW‑V2<br>CM4 | HW‑V2<br>CM5 |
 | ---------------------------------------- | ----------------------------------------- | :----------: | :----------: | :----------: |
-| Auto-reboot after initial boot           | yes, but seem to be a bug                 |      🟡       |      🧪       |      🟡       |
+| Auto-reboot after initial boot           | yes, but seem to be a bug                 |      🟡       |      ❌🧪      |      🟡       |
 | Debian release `lsb_release -a`          | Debian GNU/Linux 13 (trixie)              |      🟡       |      ✅       |      🟡       |
 | OpenMowerOS release `cat /etc/rpi-issue` | OpenMowerOS v2.x YYYY-MM-DD               |      🟡       |      ✅       |      🟡       |
 | Hostname (default) `hostname`            | openmower                                 |      🟡       |      ✅       |      🟡       |
