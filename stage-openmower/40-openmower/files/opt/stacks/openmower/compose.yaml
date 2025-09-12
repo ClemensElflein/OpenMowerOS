@@ -10,7 +10,7 @@ services:
     restart: unless-stopped
     network_mode: host
     depends_on:
-      - mosquitto
+      - Mosquitto
     volumes:
       - /dev:/dev
       - /home/openmower:/home/openmower
