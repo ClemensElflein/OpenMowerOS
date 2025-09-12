@@ -1,0 +1,18 @@
+services:
+  webterminal:
+    image: tsl0922/ttyd:alpine
+    container_name: webterminal
+    privileged: true
+    pid: host
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      - TTYD_USER=openmower
+      - TTYD_PASS=openmower
+      - TZ=UTC
+    volumes:
+      - /:/host
+      - /home/openmower/.bash_history:/home/openmower/.bash_history
+    command: sh -c 'ttyd --port 7681 --credential ${TTYD_USER}:${TTYD_PASS} chroot /host /bin/login -f openmower'
+    security_opt:
+      - no-new-privileges:false
