@@ -9,5 +9,4 @@ install -m 0664 -D "$STAGE_DIR/files/home/openmower/mower_params.yaml" "$ROOTFS_
 install -m 0755 -d "$ROOTFS_DIR/opt/stacks/openmower"
 install -m 0664 -D "$STAGE_DIR/files/opt/stacks/openmower/compose.yaml" "$ROOTFS_DIR/opt/stacks/openmower/compose.yaml"
 install -m 0644 -D "$STAGE_DIR/files/opt/stacks/openmower/.env" "$ROOTFS_DIR/opt/stacks/openmower/.env"
-install -m 0644 -D "$STAGE_DIR/files/opt/stacks/openmower/nginx.conf" "$ROOTFS_DIR/opt/stacks/openmower/nginx.conf"
 install -m 0644 -D "$STAGE_DIR/files/opt/stacks/openmower/mosquitto.conf" "$ROOTFS_DIR/opt/stacks/openmower/mosquitto.conf"
