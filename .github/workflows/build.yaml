@@ -49,6 +49,9 @@ jobs:
       - name: Build image with pi-gen (clean)
         env:
           FRESH: "1"
+          # Provide GitHub token so stage-openmower/40-openmower/00-run-chroot.sh can authenticate
+          # the GitHub API call for fetching the latest openmower-cli release (avoids 403 rate limits)
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           sudo -E bash -x ./build_image.sh
 

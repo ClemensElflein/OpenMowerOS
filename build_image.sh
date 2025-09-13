@@ -77,6 +77,11 @@ OMOS_GIT_DESCRIBE=$(git -C "${ROOT_DIR}" describe --tags --dirty --always 2>/dev
 OMOS_GIT_BRANCH=$(detect_branch)
 export PIGEN_DOCKER_OPTS+=" -e OMOS_GIT_HASH_FULL=${OMOS_GIT_HASH_FULL} -e OMOS_GIT_HASH=${OMOS_GIT_HASH} -e OMOS_GIT_DESCRIBE=${OMOS_GIT_DESCRIBE} -e OMOS_GIT_BRANCH=${OMOS_GIT_BRANCH}"
 
+# Pass through GitHub token for authenticated API (improves rate limits for openmower-cli fetch) if present
+if [ -n "${GITHUB_TOKEN:-}" ]; then
+    export PIGEN_DOCKER_OPTS+=" -e GITHUB_TOKEN=${GITHUB_TOKEN}"
+fi
+
 # Optionally map loop devices explicitly into the container (helps on some hosts)
 if [ "${MAP_LOOP_DEVICES:-0}" = "1" ]; then
     for n in 0 1 2 3 4 5 6 7; do
