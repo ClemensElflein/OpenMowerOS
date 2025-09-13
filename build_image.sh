@@ -26,10 +26,56 @@ fi
 export PIGEN_DOCKER_OPTS="${PIGEN_DOCKER_OPTS:-} --volume ${ROOT_DIR}/stage-openmower:/stage-openmower:ro"
 
 # Inject OpenMowerOS Git metadata into container environment
+
+# Detect branch name robustly even in detached HEAD (common in CI)
+detect_branch() {
+    # 1. CI specific environment variables
+    for var in GITHUB_HEAD_REF GITHUB_REF_NAME GIT_BRANCH CI_COMMIT_REF_NAME CI_BUILD_REF_NAME BUILD_SOURCEBRANCHNAME; do
+        val="${!var:-}"
+        printf '1: %s' "$val"
+        if [ -n "$val" ]; then
+            # Normalize refs/heads/* -> branch
+            case "$val" in
+                refs/heads/*) val="${val#refs/heads/}" ;;
+                refs/tags/*) val="${val#refs/tags/}" ;;
+            esac
+            printf '2: %s' "$val"
+            return 0
+        fi
+    done
+    # 2. Direct rev-parse (gives 'HEAD' in detached state)
+    local rp
+    rp=$(git -C "${ROOT_DIR}" rev-parse --abbrev-ref HEAD 2>/dev/null || true)
+    if [ -n "$rp" ] && [ "$rp" != "HEAD" ]; then
+        printf '3: %s' "$rp"
+        return 0
+    fi
+    # 3. Try to resolve first matching remote head for current commit
+    local commit
+    commit=$(git -C "${ROOT_DIR}" rev-parse HEAD 2>/dev/null || true)
+    if [ -n "$commit" ]; then
+        # List remote heads pointing to this commit
+        local remote_head
+        remote_head=$(git -C "${ROOT_DIR}" for-each-ref --format='%(objectname) %(refname:short)' refs/remotes 2>/dev/null | awk -v c="$commit" '$1==c {print $2; exit}')
+        if [ -n "$remote_head" ]; then
+            # Trim origin/ prefix if present
+            remote_head="${remote_head#origin/}"
+            printf '4: %s' "$remote_head"
+            return 0
+        fi
+    fi
+    # 4. Fallback to short hash label
+    if [ -n "$commit" ]; then
+        printf 'detached-%s' "${commit:0:8}"
+        return 0
+    fi
+    printf 'unknown'
+}
+
 OMOS_GIT_HASH_FULL=$(git -C "${ROOT_DIR}" rev-parse HEAD 2>/dev/null || echo unknown)
 OMOS_GIT_HASH=$(git -C "${ROOT_DIR}" rev-parse --short=8 HEAD 2>/dev/null || echo unknown)
 OMOS_GIT_DESCRIBE=$(git -C "${ROOT_DIR}" describe --tags --dirty --always 2>/dev/null || echo unknown)
-OMOS_GIT_BRANCH=$(git -C "${ROOT_DIR}" rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown)
+OMOS_GIT_BRANCH=$(detect_branch)
 export PIGEN_DOCKER_OPTS+=" -e OMOS_GIT_HASH_FULL=${OMOS_GIT_HASH_FULL} -e OMOS_GIT_HASH=${OMOS_GIT_HASH} -e OMOS_GIT_DESCRIBE=${OMOS_GIT_DESCRIBE} -e OMOS_GIT_BRANCH=${OMOS_GIT_BRANCH}"
 
 # Optionally map loop devices explicitly into the container (helps on some hosts)
