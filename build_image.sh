@@ -32,14 +32,13 @@ detect_branch() {
     # 1. CI specific environment variables
     for var in GITHUB_HEAD_REF GITHUB_REF_NAME GIT_BRANCH CI_COMMIT_REF_NAME CI_BUILD_REF_NAME BUILD_SOURCEBRANCHNAME; do
         val="${!var:-}"
-        printf '1: %s' "$val"
         if [ -n "$val" ]; then
             # Normalize refs/heads/* -> branch
             case "$val" in
                 refs/heads/*) val="${val#refs/heads/}" ;;
                 refs/tags/*) val="${val#refs/tags/}" ;;
             esac
-            printf '2: %s' "$val"
+            printf '%s' "$val"
             return 0
         fi
     done
@@ -47,7 +46,7 @@ detect_branch() {
     local rp
     rp=$(git -C "${ROOT_DIR}" rev-parse --abbrev-ref HEAD 2>/dev/null || true)
     if [ -n "$rp" ] && [ "$rp" != "HEAD" ]; then
-        printf '3: %s' "$rp"
+        printf '%s' "$rp"
         return 0
     fi
     # 3. Try to resolve first matching remote head for current commit
@@ -60,7 +59,7 @@ detect_branch() {
         if [ -n "$remote_head" ]; then
             # Trim origin/ prefix if present
             remote_head="${remote_head#origin/}"
-            printf '4: %s' "$remote_head"
+            printf '%s' "$remote_head"
             return 0
         fi
     fi
