@@ -1,4 +1,4 @@
-# OpenMowerOS v2.0 — What’s new (2025-09-10)
+# OpenMowerOS v2.x — What’s new (2025-09-14)
 
 This document highlights the most relevant changes compared to previous OpenMowerOS images.
 
@@ -9,6 +9,7 @@ This document highlights the most relevant changes compared to previous OpenMowe
 - 🖥️ WebTerminal [ttyd](https://github.com/tsl0922/ttyd) provides a browser-based shell as a lightweight SSH alternative.
 - 🧰 Unified `openmower` CLI for configure, pull, start, stop, status, shell, logs, …
 - 🗂️ Consolidated storage layout: configs, maps, logs now in `/home/openmower`.
+- 🧾 Version metadata at `/usr/share/openmoweros/version.{json,yaml,sh,txt}` (git hash, branch, describe, build timestamp).
 
 
 ## ♻️ Changed / Improved
@@ -30,6 +31,7 @@ This document highlights the most relevant changes compared to previous OpenMowe
 - 🧠 dnsmasq is also used for DNS caching and is managed by the resolvconf package.
 - 🔗 LAN can now be plugged into the home network.
 - 🌐 Standalone `webterminal.service` systemd unit launches the ttyd stack independently from Dockge.
+
 
 ---
 If you spot issues or have suggestions, please open an issue or PR. 🙏
