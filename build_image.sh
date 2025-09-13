@@ -25,6 +25,13 @@ fi
 # Always mount our stage-openmower into the container
 export PIGEN_DOCKER_OPTS="${PIGEN_DOCKER_OPTS:-} --volume ${ROOT_DIR}/stage-openmower:/stage-openmower:ro"
 
+# Inject OpenMowerOS Git metadata into container environment
+OMOS_GIT_HASH_FULL=$(git -C "${ROOT_DIR}" rev-parse HEAD 2>/dev/null || echo unknown)
+OMOS_GIT_HASH=$(git -C "${ROOT_DIR}" rev-parse --short=8 HEAD 2>/dev/null || echo unknown)
+OMOS_GIT_DESCRIBE=$(git -C "${ROOT_DIR}" describe --tags --dirty --always 2>/dev/null || echo unknown)
+OMOS_GIT_BRANCH=$(git -C "${ROOT_DIR}" rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown)
+export PIGEN_DOCKER_OPTS+=" -e OMOS_GIT_HASH_FULL=${OMOS_GIT_HASH_FULL} -e OMOS_GIT_HASH=${OMOS_GIT_HASH} -e OMOS_GIT_DESCRIBE=${OMOS_GIT_DESCRIBE} -e OMOS_GIT_BRANCH=${OMOS_GIT_BRANCH}"
+
 # Optionally map loop devices explicitly into the container (helps on some hosts)
 if [ "${MAP_LOOP_DEVICES:-0}" = "1" ]; then
     for n in 0 1 2 3 4 5 6 7; do
