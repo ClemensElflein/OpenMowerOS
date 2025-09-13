@@ -2,22 +2,21 @@
 
 [![OpenMower header](.github/img/open_mower_header.jpg)](https://github.com/ClemensElflein/OpenMower)
 
-This repository contains the official OpenMowerOS image for running the [OpenMower](https://github.com/ClemensElflein/OpenMower) project on your OM's Pi4/CM4.
+This repository contains the official OpenMowerOS (OMOSv2) image for running the [OpenMower](https://github.com/ClemensElflein/OpenMower) project on your OM's Pi4/CM4.
 
 ➡️ What’s new in the latest release? See [WHATSNEW.md](./WHATSNEW.md).
 
 ## Reference/Default Information
 
-- **hostname**: openmower
+- **hostname** : openmower (default)
 
-- **username**: openmower
+- **username** : openmower (fixed)
 
 - **password**: openmower ***CHANGE IT! (use `passwd` for that)***
 
 - **ssh**: enabled
 
 - **hotspot SSID**: OpenMower-\<somenumber\> (no password)
-
 
 ***
 
@@ -49,7 +48,7 @@ Tip: Click a section title to expand/collapse.
 4. Your Pi will boot multiple times.<br>
    ***Sometimes, after the first boot, it may fail to reboot*** (red LED near the HDMI plug remains on, whereas the green one doesn't flicker anymore). If that happens, a power cycle will get it back on track.
 
-5. ***If you skipped step 2: Comitup hotspot***<br>
+5. ***Optional: Comitup hotspot (if you skipped step 2 "Raspberry Pi Imager configuration")***<br>
 If you didn't enter your Wifi settings when asked for the custom settings during Pi Imager (see step 2), or if you accidentally entered the wrong Wifi settings:
 
    1. After a short time, an "OpenMower-\<somenumber>" Wifi hotspot should appear. Connect to it.
@@ -67,44 +66,50 @@ If you didn't enter your Wifi settings when asked for the custom settings during
 7.  SSH into your mower via `ssh openmower@openmower` or `ssh openmower@<your hostname or mower's IP address>` (password 'openmower' or the one you entered during Raspberry Pi Imager).
 
 8. ***Optional:***<br>
-   1. If you didn't configure a custom password during step 2, change your password now via `passwd`.
+   1. If you didn't configure a custom password during step 2 (Raspberry Pi Imager configuration), change your password now via `passwd`.
    2. Use `raspi-config` to change keyboard, timezone, WLAN country and the like (if not configured in Raspberry Pi Imager's custom settings).
-
 
  </details>
 
 <details>
 <summary><b>Manage OpenMower stack (GUI + CLI)</b></summary>
-<br>
-'Dockge' (a container manager GUI) gets automatically pulled and started after a couple of minutes (after final boot).<br>
-For each relevant GUI action, a CLI alternative is available via a powerful `openmower` command; both are listed below.<br><br>
+ 
+Dockge (a container manager GUI), as well as a ttyd (a WebTerminal) are automatically pulled and started after 2-5 minutes (after final boot).
 
-9. Connect to the container manager:
-   - GUI: Open <http://openmower:5001> (or your individual hostname if changed), and create a Dockge admin user with your preferred credentials:<br>
-   ![Create Admin Account](.github/img/dockge_01.jpg)
-   - CLI: SSH into your Pi: `ssh openmower@openmower` (or your configured hostname).
+The WebTerminal is available as a lightweight alternative to SSH for running the same commands.
+It can be reached via `http://openmower:7681` (adjust if you changed the hostname).
+Default login credentials: openmower/openmower.
 
-10. Configure the stack (.env)
-    - GUI: 
-      ![](.github/img/dockge_02_select_and_edit.jpg)
-      ![](.github/img/dockge_03_edit.jpg)
-      ![](.github/img/dockge_04_save.jpg)
-    - CLI: `openmower configure`
+For each relevant GUI action, a CLI alternative is available via a powerful `openmower` command; both are listed below.
 
-11. Start the stack (inclusive initial pull)
-    - GUI: 
-      ![](.github/img/dockge_05_start.jpg)
-    - CLI:
-      ```
-      openmower pull
-      openmower start
-      ```
+1. Connect to the container manager:
+   - GUI: Open <http://openmower:5001> (or your individual hostname if changed), and login by entering the default Dockge admin user `openmower/openmower`:
+       ![Create Admin Account](.github/img/dockge_01.jpg)
+   - CLI:
+     - SSH into your Pi: `ssh openmower@openmower` (or your configured hostname).
+     - WebTerminal via URL `http://openmower:7681` (or your configured hostname).
 
-12. Check status and open the OpenMower webApp
+2. Configure the stack (.env)
+   - GUI:
+       ![Select and Edit Stack](.github/img/dockge_02_select_and_edit.jpg)
+       ![Edit .env](.github/img/dockge_03_edit.jpg)
+       ![Save .env](.github/img/dockge_04_save.jpg)
+   - CLI: `openmower configure`
+
+3. Start the stack (inclusive initial pull)
     - GUI:
-      ![](.github/img/dockge_06_active.jpg)
-      - CLI: `openmower status` should list three services (open_mower_ros, Mosquitto, OpenMowerApp), all with status 'up'.<br>
-         If so, open a browser and visit http://openmower:8080 (or your configured hostname).
+       ![Start Stack](.github/img/dockge_05_start.jpg)
+    - CLI:
+
+       ```bash
+       openmower pull
+       openmower start
+       ```
+
+4. Check status and open the OpenMower webApp
+   - GUI:
+       ![Stack Active](.github/img/dockge_06_active.jpg)
+   - CLI: `openmower status` should list three services (open_mower_ros, Mosquitto, OpenMowerApp), all with status 'up'. If so, open a browser and visit `http://openmower:8080` (or your configured hostname).
 
 </details>
 
