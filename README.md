@@ -109,7 +109,7 @@ For each relevant GUI action, a CLI alternative is available via a powerful `ope
 4. Check status and open the OpenMower webApp
    - GUI:
        ![Stack Active](.github/img/dockge_06_active.jpg)
-   - CLI: `openmower status` should list three services (open_mower_ros, Mosquitto, OpenMowerApp), all with status 'up'. If so, open a browser and visit `http://openmower:8080` (or your configured hostname).
+   - CLI: `openmower status` should list three service names (open_mower_ros, Mosquitto, OpenMowerApp), all with status 'up'. If so, open a browser and visit `http://openmower:8080` (or your configured hostname).
 
 </details>
 

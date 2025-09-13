@@ -19,6 +19,7 @@ Legend: ✅ Pass · ❌ Fail · 🟡 Todo · 🔁 Retry · 🧪 Manual-only
 | Internal LAN                             | xCore is getting an IPv4                  |      🟡       |      ✅       |      🟡       |
 | Home LAN                                 | eth0 IPv4 by your networks DHCP           |      🟡       |      ✅       |      🟡       |
 | SSH                                      | Reachable after network is up             |      🟡       |      ✅       |      🟡       |
+| WebTerminal (ttyd)                       | Reachable at port 7681                    |      🟡       |      ✅       |      🟡       |
 | Dockge                                   | Reachable at port 5001                    |      🟡       |      ✅       |      🟡       |
 | ESC access                               | Ports get exposed via `openmower ...` cmd |      🟡       |      🟡       |      🟡       |
 | GNSS access                              | Port get exposed via `openmower ...` cmd  |      🟡       |      🟡       |      🟡       |
