@@ -21,7 +21,8 @@ services:
       - /home/openmower:/home/openmower
       - /home/openmower/mower_params.yaml:/config/mower_params.yaml
     working_dir: /home/openmower
-
+    env_file:
+      - .env
   # MQTT broker for OpenMower
   Mosquitto:
     image: eclipse-mosquitto:2
