@@ -50,8 +50,16 @@ dtoverlay=uart5
 # dtoverlay=gpio-fan,gpiopin=6,temp=70000
 
 [cm4]
-# CM4/5 antenna selection — choose Wi‑Fi antenna path
+# CM4 antenna selection — choose Wi‑Fi antenna path
 # Internal/on‑module antenna (default):
 dtparam=ant1
 # External- U.FL/IPEX antenna connector:
 # dtparam=ant2
+
+[cm5]
+# CM5 antenna selection — choose Wi‑Fi antenna path
+# Internal/on‑module antenna (default):
+dtparam=ant1
+# External- U.FL/IPEX antenna connector:
+# dtparam=ant2
+
