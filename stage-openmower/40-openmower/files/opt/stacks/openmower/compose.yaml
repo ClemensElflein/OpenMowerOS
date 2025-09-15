@@ -36,7 +36,7 @@ services:
 
   # OpenMowerApp bundled with nginx
   OpenMowerApp:
-    image: ghcr.io/apehaenger/openmowerapp:v2-rework
+    image: ghcr.io/clemenselflein/openmowerapp:latest
     container_name: OpenMowerApp
     restart: unless-stopped
     ports:
