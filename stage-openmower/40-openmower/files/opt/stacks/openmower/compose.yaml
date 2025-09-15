@@ -21,11 +21,7 @@ services:
       - /home/openmower:/home/openmower
       - /home/openmower/mower_params.yaml:/config/mower_params.yaml
     working_dir: /home/openmower
-    environment:
-      DEBUG: $DEBUG
-      OM_V2: $V2_HARDWARE
-      OM_MOWER: $MOWER
-  
+
   # MQTT broker for OpenMower
   Mosquitto:
     image: eclipse-mosquitto:2
