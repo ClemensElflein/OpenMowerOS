@@ -18,8 +18,7 @@ services:
       - Mosquitto
     volumes:
       - /dev:/dev
-      - /home/openmower:/home/openmower
-      - /home/openmower/mower_params.yaml:/config/mower_params.yaml
+      - /home/openmower/ros_home:/home/openmower
     working_dir: /home/openmower
     env_file:
       - .env
