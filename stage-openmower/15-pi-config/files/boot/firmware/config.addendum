@@ -49,6 +49,7 @@ dtoverlay=uart5
 # Example: enable GPIO fan on GPIO6, start at 70°C:
 # dtoverlay=gpio-fan,gpiopin=6,temp=70000
 
+[cm4]
 # CM4/5 antenna selection — choose Wi‑Fi antenna path
 # Internal/on‑module antenna (default):
 dtparam=ant1
