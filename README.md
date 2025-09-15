@@ -94,7 +94,7 @@ For each relevant GUI action, a CLI alternative is available via a powerful `ope
        ![Select and Edit Stack](.github/img/dockge_02_select_and_edit.jpg)
        ![Edit .env](.github/img/dockge_03_edit.jpg)
        ![Save .env](.github/img/dockge_04_save.jpg)
-   - CLI: `openmower configure`
+   - CLI: `openmower configure env`
 
 3. Start the stack (inclusive initial pull)
     - GUI:
@@ -110,6 +110,8 @@ For each relevant GUI action, a CLI alternative is available via a powerful `ope
    - GUI:
        ![Stack Active](.github/img/dockge_06_active.jpg)
    - CLI: `openmower status` should list three service names (open_mower_ros, Mosquitto, OpenMowerApp), all with status 'up'. If so, open a browser and visit `http://openmower:8080` (or your configured hostname).
+
+5. Configure the ROS parameters (CLI only for now): `openmower configure ros`
 
 </details>
 
