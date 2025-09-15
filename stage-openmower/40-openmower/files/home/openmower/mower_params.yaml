@@ -8,8 +8,8 @@ ll:
       volume: -1
     gps:
       baud_rate: 921600
-      # GPS protocol. Use UBX for u-blox chipsets and NMEA for everything else
-      protocol: "NMEA"
+      # GPS protocol. Use UBX for u-blox chipsets (e.g. Ardusimple) and NMEA for everything else
+      protocol: "UBX"
       # Set to coordinates near your docking station, this will be your map origin
       datum_lat: 53.457452
       datum_long: 10.014737
