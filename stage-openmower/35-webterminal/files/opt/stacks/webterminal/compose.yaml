@@ -1,19 +1,18 @@
 services:
   webterminal:
-    image: tsl0922/ttyd:alpine
+    image: tsl0922/ttyd:latest
     container_name: webterminal
-    # privileged: true   # Uncomment only if you really need full host device access
-    # pid: host          # Uncomment with privileged for full host PID namespace
+    privileged: true
+    pid: host
     network_mode: host
     restart: unless-stopped
-    volumes:
-      - /:/host
-      - /home/openmower/.bash_history:/home/openmower/.bash_history
+    # You can add `--credential ${TTYD_USER}:${TTYD_PASS}` to the command for some basic authentication
     command: >
-      sh -c 'ttyd --client-option disableReconnect=true --client-option disableLeaveConfirmation=true --writable --port ${TTYD_PORT} --credential ${TTYD_USER}:${TTYD_PASS} \
-        chroot /host /usr/local/sbin/webterminal-shell-wrapper.sh'
-
+      sh -c 'ttyd --client-option disableReconnect=true --client-option
+      disableLeaveConfirmation=true --writable --port ${TTYD_PORT} \
+        -W nsenter -t 1 -a su - openmower'
 # Dockge-specific extras shown in the UI
 x-dockge:
   urls:
-  - http://${HOSTNAME}:${TTYD_PORT}
+    - http://${HOSTNAME}:${TTYD_PORT}
+networks: {}
