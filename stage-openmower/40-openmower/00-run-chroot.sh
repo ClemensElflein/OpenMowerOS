@@ -11,6 +11,8 @@ mkdir -p $TARGET_HOME/recordings
 chown -R 1000:1000 $TARGET_HOME/recordings
 mkdir -p $TARGET_HOME/ros
 chown -R 1000:1000 $TARGET_HOME/ros
+mkdir -p $TARGET_HOME/params
+chown -R 1000:1000 $TARGET_HOME/params
 
 export DEBIAN_FRONTEND=noninteractive
 
