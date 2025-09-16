@@ -18,8 +18,14 @@ services:
       - Mosquitto
     volumes:
       - /dev:/dev
-      - /home/openmower/ros_home:/home/openmower
+      - /home/openmower/ros:/data/ros
+      - /home/openmower/recordings:/data/recordings
+      - /home/openmower/params:/data/params
     working_dir: /home/openmower
+    environment:
+      - RECORDINGS_PATH=/data/recordings
+      - PARAMS_PATH=/data/params
+      - ROS_HOME=/data/ros
     env_file:
       - .env
   # MQTT broker for OpenMower
