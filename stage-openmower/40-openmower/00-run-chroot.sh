@@ -9,6 +9,8 @@ usermod -aG docker openmower
 # Create the dir for recordings (so that it has the correct permissions)
 mkdir -p $TARGET_HOME/recordings
 chown -R 1000:1000 $TARGET_HOME/recordings
+mkdir -p $TARGET_HOME/ros
+chown -R 1000:1000 $TARGET_HOME/ros
 
 export DEBIAN_FRONTEND=noninteractive
 
