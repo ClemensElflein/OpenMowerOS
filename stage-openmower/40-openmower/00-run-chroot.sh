@@ -6,6 +6,9 @@ chmod -R u=rwX,g=rwX,o=rX /home/openmower/ /opt/stacks/openmower/
 # Make sure user is in docker group for user-run service
 usermod -aG docker openmower
 
+# Create the dir for recordings (so that it has the correct permissions)
+mkdir -p $TARGET_HOME/recordings
+chown -R 1000:1000 $TARGET_HOME/recordings
 
 export DEBIAN_FRONTEND=noninteractive
 
