@@ -7,12 +7,12 @@ chmod -R u=rwX,g=rwX,o=rX /home/openmower/ /opt/stacks/openmower/
 usermod -aG docker openmower
 
 # Create the dir for recordings (so that it has the correct permissions)
-mkdir -p $TARGET_HOME/recordings
-chown -R 1000:1000 $TARGET_HOME/recordings
-mkdir -p $TARGET_HOME/ros
-chown -R 1000:1000 $TARGET_HOME/ros
-mkdir -p $TARGET_HOME/params
-chown -R 1000:1000 $TARGET_HOME/params
+mkdir -p /home/openmower/recordings
+chown -R 1000:1000 /home/openmower/recordings
+mkdir -p /home/openmower/ros
+chown -R 1000:1000 /home/openmower/ros
+mkdir -p /home/openmower/params
+chown -R 1000:1000 /home/openmower/params
 
 export DEBIAN_FRONTEND=noninteractive
 
