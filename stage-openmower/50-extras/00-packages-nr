@@ -1,0 +1,8 @@
+# Install a few helpful packages
+mc
+openocd
+wavemon
+aptitude
+socat
+bind9-host
+bind9-dnsutils

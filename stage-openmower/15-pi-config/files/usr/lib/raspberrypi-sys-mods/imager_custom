@@ -1,0 +1,79 @@
+#!/bin/bash
+# Raspberry Pi Imager custom actions hook (adapted for NetworkManager)
+# This script is called by /boot/firstrun.sh on initial first run of the image.
+set -euo pipefail
+
+# Debugging
+#set -Eeuo pipefail
+#exec > /boot/imager_custom.log 2>&1
+#trap 'echo "ERROR at line $LINENO"; exit 1' ERR
+#set -x
+
+cmd=${1:-}
+shift || true
+
+case "$cmd" in
+    set_wlan)
+        # Args: SSID PSK_HEX_OR_PLAIN COUNTRY
+        SSID=${1:-}; PSK=${2:-}; COUNTRY=${3:-}
+        if [[ -z "$SSID" || -z "$PSK" ]]; then
+            echo "imager_custom: set_wlan missing SSID/PSK" >&2
+            exit 0
+        fi
+        # Ensure regulatory domain (best effort)
+        if [[ -n "$COUNTRY" ]]; then
+            rfkill unblock wifi
+            iw reg set "$COUNTRY"
+        fi
+        # Create NM profile named like the SSID
+        systemctl start NetworkManager.service
+        nmcli con add type wifi ifname "" con-name "$SSID" ssid "$SSID"
+        nmcli con modify "$SSID" wifi-sec.key-mgmt wpa-psk wifi-sec.psk "$PSK"
+        nmcli con modify "$SSID" connection.autoconnect yes
+    ;;
+    
+    set_hostname)
+        HN=${1:-}
+        if [[ -n "$HN" ]]; then
+            CURRENT_HOSTNAME=$(tr -d " \t\n\r" </etc/hostname)
+            echo "$HN" >/etc/hostname
+            sed -i "s/127.0.1.1.*$CURRENT_HOSTNAME/127.0.1.1\t$HN/g" /etc/hosts
+        fi
+    ;;
+    
+    set_keymap)
+        LAYOUT=${1:-}
+        if [[ -n "$LAYOUT" ]]; then
+            sed -i "s/^XKBLAYOUT=.*/XKBLAYOUT=\"$LAYOUT\"/" /etc/default/keyboard
+            setupcon -k
+            dpkg-reconfigure -f noninteractive keyboard-configuration console-setup
+            update-initramfs -u
+        fi
+    ;;
+    
+    set_timezone)
+        TZ=${1:-}
+        if [[ -n "$TZ" ]]; then
+            rm -f /etc/localtime
+            echo "$TZ" >/etc/timezone
+            dpkg-reconfigure -f noninteractive tzdata
+        fi
+    ;;
+    
+    enable_ssh)
+        # Always apply key to the 'openmower' user, regardless of imager input
+        if [[ ${1:-} == "-k" && -n ${2:-} ]]; then
+            TARGET_USER="openmower"
+            TARGET_HOME="/home/$TARGET_USER"
+            install -o "$TARGET_USER" -m 700 -d "$TARGET_HOME/.ssh"
+            install -o "$TARGET_USER" -m 600 <(printf "%s\n" "$2") "$TARGET_HOME/.ssh/authorized_keys"
+        fi
+        systemctl enable ssh
+    ;;
+    
+    *)
+        # Unknown or no-op; exit gracefully
+    ;;
+esac
+
+exit 0

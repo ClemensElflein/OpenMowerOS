@@ -1,0 +1,42 @@
+#!/bin/sh
+# OpenMowerOS override of userconf script.
+# We intentionally IGNORE any username passed by Raspberry Pi Imager and
+# force the primary user to remain 'openmower', while still honoring the
+# provided password hash (second argument). This guarantees a stable user
+# for services, paths, and documentation, but allows operators to set an
+# initial password via Imager.
+
+set -eu
+
+TARGET_USER="openmower"
+TARGET_GROUP="openmower"
+
+# Arguments from firstrun.sh: requested_user password_hash
+# We only care about password_hash; ignore the requested_user entirely.
+
+if [ $# -ge 2 ]; then
+    # Args: NEWNAME NEWPASS (we ignore NEWNAME)
+    shift 1
+    NEWPASS="$1"
+else
+    NEWPASS=""
+fi
+
+# Apply password hash if provided (hash expected in crypt format: starts with $5$, $6$, etc.)
+if [ -n "${NEWPASS}" ]; then
+    echo "${TARGET_USER}:${NEWPASS}" | chpasswd -e || echo "userconf override: failed to set password" >&2
+fi
+
+# Browser profile anonymisation logic retained from upstream
+if [ -x /usr/bin/raspi-config ] && raspi-config nonint is_pi; then
+    HASH=$(grep Serial /proc/cpuinfo | sha256sum | cut -f1 -d' ')
+    for file in /etc/chromium/master_preferences /usr/share/firefox/distribution/distribution.ini; do
+        [ -f "$file" ] || continue
+        sed -i "s/UNIDENTIFIED/$HASH/g" "$file"
+    done
+fi
+
+# Signal to the system that rename workflow is complete (pass our fixed user)
+/usr/bin/cancel-rename "$TARGET_USER"
+
+exit 0

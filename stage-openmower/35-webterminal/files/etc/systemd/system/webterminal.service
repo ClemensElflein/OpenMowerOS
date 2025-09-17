@@ -1,0 +1,18 @@
+[Unit]
+Description=WebTerminal (ttyd) for OpenMowerOS
+Documentation=https://github.com/ClemensElflein/OpenMowerOS
+Wants=network-online.target docker.service
+After=network-online.target docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/opt/stacks/webterminal
+ExecStartPre=/bin/sh -c 'H="$(hostname -f 2>/dev/null || hostname || cat /etc/hostname)"; EF="/opt/stacks/webterminal/.env"; if [ -f "$EF" ]; then if grep -qE "^[[:space:]]*HOSTNAME[[:space:]]*=" "$EF"; then sed -i -E "s|^[[:space:]]*HOSTNAME[[:space:]]*=.*|HOSTNAME=$H|g" "$EF"; else echo "HOSTNAME=$H" >> "$EF"; fi; fi'
+ExecStartPre=/usr/bin/docker compose pull --quiet
+ExecStart=/usr/bin/docker compose up -d
+ExecStop=/usr/bin/docker compose down
+TimeoutStartSec=5min
+
+[Install]
+WantedBy=multi-user.target

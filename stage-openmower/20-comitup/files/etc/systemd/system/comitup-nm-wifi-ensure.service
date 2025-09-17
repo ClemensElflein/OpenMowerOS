@@ -1,0 +1,15 @@
+[Unit]
+Description=Ensure Wi‑Fi radio enabled and managed before Comitup
+Wants=NetworkManager.service
+After=NetworkManager.service
+Before=comitup.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStartPre=/usr/sbin/rfkill unblock wifi
+ExecStart=/usr/bin/nmcli radio wifi on
+ExecStartPost=/bin/sh -c 'nmcli -t -f DEVICE,TYPE dev status | grep -q "^wlan0:wifi" && nmcli dev set wlan0 managed yes'
+
+[Install]
+WantedBy=multi-user.target

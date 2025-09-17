@@ -1,52 +1,137 @@
-name: Build Image
+name: Build OpenMowerOS (pi-gen)
 
-# Controls when the workflow will run
 on:
   workflow_dispatch:
   push:
     branches:
-      - 'main'
+      - main
     tags:
-      - 'v*.*.*'
+      - v*.*.*
+    paths:
+      - build_image.sh
+      - pi-gen.config
+      - stage-openmower/**
+      - .github/workflows/build.yaml
+  pull_request:
+    branches:
+      - main
+      - v2-rework
+
+# Allow stopping obsolete workflows
+concurrency:
+  group: ci-pigen-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     steps:
-    - name: Install Dependencies
-      run: |
-        sudo apt update
-        sudo apt install coreutils p7zip-full qemu-user-static
+      - name: Checkout repository (with submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: true
 
-    - name: Checkout Project Repository
-      uses: actions/checkout@v2
-      with:
-        path: repository
-        submodules: true
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y coreutils quilt parted qemu-user-static debootstrap zerofree zip \
+            dosfstools e2fsprogs libarchive-tools libcap2-bin grep rsync xz-utils file git curl bc \
+            gpg pigz xxd arch-test bmap-tools
 
-    - name: Build Image
-      run: |
-        sudo modprobe loop
-        cd repository
-        sudo bash -x ./build_image.sh
+      - name: Docker info and loop device
+        run: |
+          docker --version
+          sudo modprobe loop || true
 
-    - name: Copy output
-      id: copy
-      run: |
-        source repository/OpenMowerOS/src/config
-        NOW=$(date +"%Y-%m-%d-%H%M")
-        IMAGE=$NOW-open-mower-os-$DIST_VERSION
+      - name: Build image with pi-gen (clean)
+        env:
+          FRESH: "1"
+          # Provide GitHub token so stage-openmower/40-openmower/00-run-chroot.sh can authenticate
+          # the GitHub API call for fetching the latest openmower-cli release (avoids 403 rate limits)
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          sudo -E bash -x ./build_image.sh
 
-        cp repository/OpenMowerOS/src/workspace/*.img $IMAGE.img
+      - name: Prepare release context (tag vs latest)
+        id: rel
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            TAG="${GITHUB_REF#refs/tags/}"
+            echo "base_url=https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG}/" >> "$GITHUB_OUTPUT"
+            echo "release_tag=${TAG}" >> "$GITHUB_OUTPUT"
+            echo "prerelease=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "base_url=https://github.com/${GITHUB_REPOSITORY}/releases/latest/download/" >> "$GITHUB_OUTPUT"
+            echo "release_tag=latest" >> "$GITHUB_OUTPUT"
+            echo "prerelease=true" >> "$GITHUB_OUTPUT"
+          fi
 
-        echo "image=$IMAGE" >> $GITHUB_OUTPUT
-    - name: Create image zip
-      run: zip ${{ steps.copy.outputs.image }}.zip ${{ steps.copy.outputs.image }}.img
-    - uses: "marvinpinto/action-automatic-releases@latest"
-      with:
-        repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        automatic_release_tag: "latest"
-        prerelease: true
-        title: "Latest Image"
-        files: |
-          ${{ steps.copy.outputs.image }}.zip
+      - name: Upload build logs (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pigen-build-logs
+          path: |
+            ext/pi-gen/deploy/build.log
+            ext/pi-gen/deploy/build-docker.log
+
+      - name: List deploy outputs
+        run: |
+          ls -l ext/pi-gen/deploy || true
+
+      - name: Collect artifacts to ./artifacts
+        id: collect
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts
+          latest_zip=$(ls -t ext/pi-gen/deploy/*.zip 2>/dev/null | head -n1 || true)
+          if [[ -z "$latest_zip" ]]; then
+            echo "No ZIP found in ext/pi-gen/deploy" >&2
+            exit 1
+          fi
+          if [[ "$latest_zip" =~ image_([0-9]{4})-([0-9]{2})-([0-9]{2})-.*\.zip$ ]]; then
+            y=${BASH_REMATCH[1]}; m=${BASH_REMATCH[2]}; d=${BASH_REMATCH[3]}
+            date_compact="${y}${m}${d}"
+          else
+            date_compact=$(date -u +%Y%m%d)
+          fi
+          # Create two artifacts: raw .img for GH artifact (GH auto-zips), and a .zip for releases
+          img_in_zip=$(bsdtar -tf "${latest_zip}" | grep -E '\.img$' | head -n1)
+          if [[ -z "${img_in_zip}" ]]; then
+            echo "No .img found inside ${latest_zip}" >&2
+            echo "Archive content was:" >&2
+            bsdtar -tf "${latest_zip}" >&2
+            exit 1
+          fi
+          bsdtar -xf "${latest_zip}" -C artifacts "${img_in_zip}"
+          mv "artifacts/${img_in_zip}" "artifacts/OpenMowerOS_${date_compact}.img"
+          out_zip="artifacts/OpenMowerOS_${date_compact}.zip"
+          zip -9 -j "${out_zip}" "artifacts/OpenMowerOS_${date_compact}.img"
+          # Clean up temp to save space
+          ls -l artifacts
+          # Expose outputs for downstream steps
+          echo "artifact_name=OpenMowerOS_${date_compact}" >> "$GITHUB_OUTPUT"
+          echo "img_path=artifacts/OpenMowerOS_${date_compact}.img" >> "$GITHUB_OUTPUT"
+
+      - name: Upload build artifacts (raw .img)
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.collect.outputs.artifact_name }}
+          path: ${{ steps.collect.outputs.img_path }}
+
+      - name: Publish release/prerelease
+        if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/heads/main') || startsWith(github.ref, 'refs/tags/')
+        uses: marvinpinto/action-automatic-releases@latest
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          automatic_release_tag: ${{ steps.rel.outputs.release_tag }}
+          prerelease: ${{ steps.rel.outputs.prerelease }}
+          title: OpenMowerOS ${{ steps.rel.outputs.release_tag }}
+          files: |
+            artifacts/OpenMowerOS_*.zip

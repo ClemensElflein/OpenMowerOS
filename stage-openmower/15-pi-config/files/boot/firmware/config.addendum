@@ -1,0 +1,65 @@
+
+####################################################
+####     OpenMowerOS specific configurations    ####
+####################################################
+####      DO NOT CHANGE SECTION BELOW !!!       ####
+####   UNLESS YOU KNOW WHAT YOU ARE DOING !!!   ####
+####################################################
+
+## For more options and information see
+## https://www.raspberrypi.com/documentation/computers/config_txt.html
+## Some settings may impact device functionality. See link above for details
+
+## For additional information about device filters see
+## https://www.raspberrypi.com/documentation/computers/config_txt.html#model-filters
+
+[pi0]
+## This affects Pi Zero(W) and Pi Zero2.
+## Due to lack of RAM, limit GPU RAM
+gpu_mem=128
+
+[pi2]
+gpu_mem=256
+
+[pi3]
+## Use 256 if 1Gb Ram Model!
+gpu_mem=128
+# gpu_mem=256
+
+[pi4]
+## Enable DRM VC4 V3D driver on top of the dispmanx display stack
+#dtoverlay=vc4-fkms-v3d
+#max_framebuffers=2
+## Do not use more than 256Mb on Pi Model 4, it uses its own Management.
+#gpu_mem=256
+
+[all]
+## Enable Hardware UART for Serial Communication
+dtoverlay=disable-bt
+enable_uart=1
+dtoverlay=uart2
+dtoverlay=uart3
+dtoverlay=uart4
+dtoverlay=uart5
+
+## Enable VideoCore at boot, needed for Raspicams and DSI devices.
+#start_x=1
+
+# Fan control (GPIO fan) — enable and set start temperature (in millidegrees C)
+# Example: enable GPIO fan on GPIO6, start at 70°C:
+# dtoverlay=gpio-fan,gpiopin=6,temp=70000
+
+[cm4]
+# CM4 antenna selection — choose Wi‑Fi antenna path
+# Internal/on‑module antenna (default):
+dtparam=ant1
+# External- U.FL/IPEX antenna connector:
+# dtparam=ant2
+
+[cm5]
+# CM5 antenna selection — choose Wi‑Fi antenna path
+# Internal/on‑module antenna (default):
+dtparam=ant1
+# External- U.FL/IPEX antenna connector:
+# dtparam=ant2
+
