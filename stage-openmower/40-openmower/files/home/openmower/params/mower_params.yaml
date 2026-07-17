@@ -25,7 +25,7 @@ mower_logic:
   automatic_mode: 0
   docking_approach_distance: 1.0
   # Increase if necessary in small increments (e.g 0.1s) to ensure mower gets good contact on charging pins
-  docking_extra_time: 0.0
+  docking_extra_time: 0.2
   docking_retry_count: 3
   docking_redock: false
   outline_overlap_count: 1
