@@ -2,6 +2,17 @@ ll:
   # eth0 IP of your CM4
   bind_ip: "172.16.78.1"
 
+  # Your board type:
+  # "YardForce"    = Regular YardForce board
+  # "YardForce-V4" = YardForce board with YFR4-xESC for old Rev.4 mow motor
+  # "Universal-5S" = Universal board with 5S battery
+  # "Universal-7S" = Universal board with 7S battery
+  # "Universal-8S" = Universal board with 8S battery
+  # "Worx"         = Universal board with Worx functionality
+  # "Lyfco-E1600"  = Universal board with Lyfco-E1600 functionality
+  # "Husq310MKII"  = Husqvarna-310MKII board
+  board: "Your board type"
+
   services:
     sound:
       language: "en"
