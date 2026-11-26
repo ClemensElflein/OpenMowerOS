@@ -2,21 +2,36 @@ ll:
   # eth0 IP of your CM4
   bind_ip: "172.16.78.1"
 
-  # Your board type:
-  # "YardForce"    = Regular YardForce board
-  # "YardForce-V4" = YardForce board with YFR4-xESC for old Rev.4 mow motor
+  # Your board variant:
   # "Universal-5S" = Universal board with 5S battery
   # "Universal-7S" = Universal board with 7S battery
   # "Universal-8S" = Universal board with 8S battery
   # "Worx"         = Universal board with Worx functionality
   # "Lyfco-E1600"  = Universal board with Lyfco-E1600 functionality
   # "Husq310MKII"  = Husqvarna-310MKII board
-  board: "Your board type"
+  #
+  # Ignored for the boards the firmware detects itself like
+  # Sabo, xBot and the two YardForce variants.
+  board: "Your board variant"
 
   services:
     sound:
-      language: "en"
+      # Master Volume: -1 = keep LL stored volume, 0-100 = override on HL start
       volume: -1
+
+      #
+      # HW v2 only
+      #
+      # Set to true on boards with a sound amplifier and an attached speaker
+      # (e.g. YardForce or Sabo, but NOT Universal); calls `soundctl sync` on startup.
+      enabled: false
+      # Currently available sound languages: en, de, fr, nl, pl, sv.
+      config_file: "/opt/open_mower_ros/src/open_mower/params/sounds_en.yaml"
+
+      #
+      # HW v1 only
+      #
+      language: "en"
     gps:
       baud_rate: 921600
       # GPS protocol. Use UBX for u-blox chipsets (e.g. Ardusimple) and NMEA for everything else
