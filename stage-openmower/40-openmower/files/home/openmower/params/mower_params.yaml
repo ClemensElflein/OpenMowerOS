@@ -16,8 +16,22 @@ ll:
 
   services:
     sound:
-      language: "en"
+      # Master Volume: -1 = keep LL stored volume, 0-100 = override on HL start
       volume: -1
+
+      #
+      # HW v2 only
+      #
+      # Set to true on boards with a sound amplifier and an attached speaker
+      # (e.g. YardForce or Sabo, but NOT Universal); calls `soundctl sync` on startup.
+      enabled: false
+      # Currently available sound languages: en, de, fr, nl, pl, sv.
+      config_file: "/opt/open_mower_ros/src/open_mower/params/sounds_en.yaml"
+
+      #
+      # HW v1 only
+      #
+      language: "en"
     gps:
       baud_rate: 921600
       # GPS protocol. Use UBX for u-blox chipsets (e.g. Ardusimple) and NMEA for everything else
